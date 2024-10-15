@@ -41,4 +41,11 @@ public:
 	PhysBody* pbody;
 	float jumpForce = 1.2f; // The force to apply when jumping
 	bool isJumping = false; // Flag to check if the player is currently jumping
+	int jumpCount = 0;
+
+	bool isDashing = false;
+	bool canDash = true;
+	float dashSpeed = 5.0f;
+	float dashDuration = 0.2f;
+	float dashTimer = 0.0f;
 };

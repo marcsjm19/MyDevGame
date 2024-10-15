@@ -58,9 +58,10 @@ bool Player::Update(float dt)
 	}
 	
 	//Jump
-	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && isJumping == false) {
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && jumpCount < 2) {
 		// Apply an initial upward force
 		pbody->body->ApplyLinearImpulseToCenter(b2Vec2(0, -jumpForce), true);
+		jumpCount++;
 		isJumping = true;
 	}
 
@@ -96,6 +97,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		LOG("Collision PLATFORM");
 		//reset the jump flag when touching the ground
 		isJumping = false;
+		jumpCount = 0;
 		break;
 	case ColliderType::ITEM:
 		LOG("Collision ITEM");
