@@ -20,7 +20,7 @@ Player::~Player() {
 bool Player::Awake() {
 
 	//L03: TODO 2: Initialize Player parameters
-	position = Vector2D(0, 0);
+	position = Vector2D(30, 0);
 	return true;
 }
 
