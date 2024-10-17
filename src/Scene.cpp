@@ -55,23 +55,31 @@ bool Scene::PreUpdate()
 // Called each loop iteration
 bool Scene::Update(float dt)
 {
-	//L03 TODO 3: Make the camera movement independent of framerate
-	float camSpeed = 0.05;
+    // Get the player's position from the physics body
+    Vector2D playerPos = player->position; // Already updated by the Player class
 
-	if(Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
-		Engine::GetInstance().render.get()->camera.y += ceil(camSpeed * dt);
+    // Get the screen size (width and height)
+    int screenWidth, screenHeight;
+    Engine::GetInstance().window->GetWindowSize(screenWidth, screenHeight);
 
-	if(Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
-		Engine::GetInstance().render.get()->camera.y -= ceil(camSpeed * dt);
+    // Calculate the desired camera position with an offset
+    // Offset ensures that the player isn't too close to the screen edges
+    int cameraOffsetX = (screenWidth / 8) - (screenWidth / 4); // You can adjust this value to control horizontal offset
+    int cameraOffsetY = screenHeight / 4; // You can adjust this value to control vertical offset
 
-	if(Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
-		Engine::GetInstance().render.get()->camera.x += ceil(camSpeed * dt);
+    // Set camera to follow player position with the offset
+    int targetCameraX = -playerPos.getX() + (screenWidth / 2) + cameraOffsetX;
+	int targetCameraY = -playerPos.getY() + (screenHeight) - cameraOffsetY;
 
-	if(Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
-		Engine::GetInstance().render.get()->camera.x -= ceil(camSpeed * dt);
+    // Smooth camera movement
+    float lerpFactor = 0.1f; // Adjust this factor for more or less smoothness
+    Engine::GetInstance().render.get()->camera.x += (targetCameraX - Engine::GetInstance().render.get()->camera.x) * lerpFactor;
+    Engine::GetInstance().render.get()->camera.y += (targetCameraY - Engine::GetInstance().render.get()->camera.y) * lerpFactor;
 
-	return true;
+    return true;
 }
+
+
 
 // Called each loop iteration
 bool Scene::PostUpdate()
