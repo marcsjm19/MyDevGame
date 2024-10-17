@@ -41,6 +41,8 @@ bool Player::Start() {
 
 	jump.LoadAnimations(parameters.child("animations").child("jump"));
 
+	die.LoadAnimations(parameters.child("animations").child("die"));
+
 	// L08 TODO 5: Add physics to the player - initialize physics body
 	//Engine::GetInstance().textures.get()->GetSize(texture, texW, texH);
 	pbody = Engine::GetInstance().physics.get()->CreateCircle((int)position.getX(), (int)position.getY(), texW / 2, bodyType::DYNAMIC);
@@ -70,7 +72,7 @@ bool Player::Update(float dt)
 		velocity.x = 0.2 * dt;
 		currentAnimation = &walking;
 	}
-	
+
 	//Jump
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && jumpCount < 2) {
 		// Apply an initial upward force
@@ -80,15 +82,43 @@ bool Player::Update(float dt)
 	}
 
 	// If the player is jumpling, we don't want to apply gravity, we use the current velocity prduced by the jump
-	if(isJumping == true)
+	if (isJumping == true)
 	{
 		velocity = pbody->body->GetLinearVelocity();
 		currentAnimation = &jump;
 	}
 
-	if (velocity.x == 0)
+	if (velocity.x == 0 && currentAnimation != &die && !isDead)
 	{
 		currentAnimation = &idle;
+	}
+
+	// If the player is dead, play the die animation
+	if (position.getY() >= 720 && !isDead)
+	{
+		isDead = true;
+		currentAnimation = &die;
+		die.Reset();
+		deathTime = SDL_GetTicks();
+	}
+
+	if (isDead)
+	{
+		currentAnimation = &die;
+		Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX(), (int)position.getY(), &currentAnimation->GetCurrentFrame());
+		currentAnimation->Update();
+
+		// If the die animation is finished, wait for 2 seconds to respawn
+		// Wait 2 seconds before respawn
+		if (currentAnimation->HasFinished())
+		{
+			// Wait 2 seconds before respawn
+			if (SDL_GetTicks() - deathTime >= 2000) {
+				Respawn();  // Respawn the player after 2 seconds
+				return true;  // Stop further updates until respawn
+			}
+		}
+		return true;  // Don't update the rest if the player is dead
 	}
 
 	// Apply the velocity to the player
@@ -97,7 +127,7 @@ bool Player::Update(float dt)
 	b2Transform pbodyPos = pbody->body->GetTransform();
 	position.setX(METERS_TO_PIXELS(pbodyPos.p.x) - texH / 2);
 	position.setY(METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2);
-	
+
 	if (velocity.x >= 0)
 	{
 		Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX(), (int)position.getY(), &currentAnimation->GetCurrentFrame());
@@ -155,4 +185,21 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 	default:
 		break;
 	}
+}
+
+void Player::Respawn()
+{
+	// Reset the player's position to the initial spawn point
+	Player::position.setX(2);
+	Player::position.setY(0);
+
+	// Reset physics body position
+	pbody->body->SetTransform(b2Vec2(position.getX(), position.getY()), 0);
+
+	// Reset other variables like jump count, health, etc.
+	currentAnimation = &idle;
+	jumpCount = 0;
+	isJumping = false;
+	dieAnimationPlayed = false;
+	isDead = false;  // Player is no longer dead
 }

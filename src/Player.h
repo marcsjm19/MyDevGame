@@ -32,6 +32,8 @@ public:
 		this->parameters = parameters;
 	}
 
+	void Respawn();
+
 public:
 
 	//Declare player parameters
@@ -54,9 +56,14 @@ public:
 	float dashDuration = 0.2f;
 	float dashTimer = 0.0f;
 
+	bool isDead = false;       // Tracks whether the player is dead
+	bool dieAnimationPlayed = false; // Tracks if the die animation has finished
+	Uint32 deathTime = 0;
+
 	pugi::xml_node parameters;
 	Animation* currentAnimation = nullptr;
 	Animation idle;
 	Animation walking;
 	Animation jump;
+	Animation die;
 };
