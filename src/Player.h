@@ -3,6 +3,7 @@
 #include "Entity.h"
 #include "SDL2/SDL.h"
 #include "Box2D/Box2D.h"
+#include "Animation.h"
 
 struct SDL_Texture;
 
@@ -27,6 +28,10 @@ public:
 
 	void OnCollisionEnd(PhysBody* physA, PhysBody* physB);
 
+	void SetParameters(pugi::xml_node parameters) {
+		this->parameters = parameters;
+	}
+
 public:
 
 	//Declare player parameters
@@ -48,4 +53,10 @@ public:
 	float dashSpeed = 5.0f;
 	float dashDuration = 0.2f;
 	float dashTimer = 0.0f;
+
+	pugi::xml_node parameters;
+	Animation* currentAnimation = nullptr;
+	Animation idle;
+	Animation walking;
+	Animation jump;
 };

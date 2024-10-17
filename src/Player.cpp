@@ -27,10 +27,22 @@ bool Player::Awake() {
 bool Player::Start() {
 
 	//L03: TODO 2: Initialize Player parameters
-	texture = Engine::GetInstance().textures.get()->Load("Assets/Textures/player1.png");
+	texture = Engine::GetInstance().textures.get()->Load(parameters.attribute("texture").as_string());
+	position.setX(parameters.attribute("x").as_int());
+	position.setY(parameters.attribute("y").as_int());
+	texW = parameters.attribute("w").as_int();
+	texH = parameters.attribute("h").as_int();
+
+	//Load animations
+	idle.LoadAnimations(parameters.child("animations").child("idle"));
+	currentAnimation = &idle;
+
+	walking.LoadAnimations(parameters.child("animations").child("walking"));
+
+	jump.LoadAnimations(parameters.child("animations").child("jump"));
 
 	// L08 TODO 5: Add physics to the player - initialize physics body
-	Engine::GetInstance().textures.get()->GetSize(texture, texW, texH);
+	//Engine::GetInstance().textures.get()->GetSize(texture, texW, texH);
 	pbody = Engine::GetInstance().physics.get()->CreateCircle((int)position.getX(), (int)position.getY(), texW / 2, bodyType::DYNAMIC);
 
 	// L08 TODO 6: Assign player class (using "this") to the listener of the pbody. This makes the Physics module to call the OnCollision method
@@ -55,6 +67,7 @@ bool Player::Update(float dt)
 	// Move right
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
 		velocity.x = 0.2 * dt;
+		currentAnimation = &walking;
 	}
 	
 	//Jump
@@ -69,6 +82,12 @@ bool Player::Update(float dt)
 	if(isJumping == true)
 	{
 		velocity = pbody->body->GetLinearVelocity();
+		currentAnimation = &jump;
+	}
+
+	if (velocity.x == 0)
+	{
+		currentAnimation = &idle;
 	}
 
 	// Apply the velocity to the player
@@ -77,8 +96,9 @@ bool Player::Update(float dt)
 	b2Transform pbodyPos = pbody->body->GetTransform();
 	position.setX(METERS_TO_PIXELS(pbodyPos.p.x) - texH / 2);
 	position.setY(METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2);
-
-	Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX(), (int)position.getY());
+	
+	Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX(), (int)position.getY(), &currentAnimation->GetCurrentFrame());
+	currentAnimation->Update();
 	return true;
 }
 
