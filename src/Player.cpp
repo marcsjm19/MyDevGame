@@ -62,6 +62,7 @@ bool Player::Update(float dt)
 	// Move left
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
 		velocity.x = -0.2 * dt;
+		currentAnimation = &walking;
 	}
 
 	// Move right
@@ -97,7 +98,15 @@ bool Player::Update(float dt)
 	position.setX(METERS_TO_PIXELS(pbodyPos.p.x) - texH / 2);
 	position.setY(METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2);
 	
-	Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX(), (int)position.getY(), &currentAnimation->GetCurrentFrame());
+	if (velocity.x >= 0)
+	{
+		Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX(), (int)position.getY(), &currentAnimation->GetCurrentFrame());
+	}
+	else
+	{
+		Engine::GetInstance().render.get()->DrawTextureFlip(texture, (int)position.getX(), (int)position.getY(), &currentAnimation->GetCurrentFrame());
+	}
+
 	currentAnimation->Update();
 	return true;
 }
