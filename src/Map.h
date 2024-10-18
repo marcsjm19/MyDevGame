@@ -10,7 +10,13 @@ struct Properties
     struct Property
     {
         std::string name;
-        bool value; //We assume that we are going to work only with bool for the moment
+
+        // Property values (use only the relevant one for each property)
+        bool value;             // Boolean value (if type is bool)
+        int intValue;           // Integer value (if type is int)
+        std::string stringValue; // String value (if type is string)
+
+        Property() : value(false), intValue(0) {}  // Default constructor
     };
 
     std::list<Property*> propertyList;
@@ -27,7 +33,6 @@ struct Properties
 
     // L09: DONE 7: Method to ask for the value of a custom property
     Property* GetProperty(const char* name);
-
 };
 
 struct MapLayer

@@ -154,6 +154,12 @@ bool Map::Load(std::string path, std::string fileName)
 			std::string imgName = tilesetNode.child("image").attribute("source").as_string();
             tileSet->texture = Engine::GetInstance().textures->Load((mapPath+imgName).c_str());
 
+            // Check if the texture was successfully loaded
+            if (tileSet->texture == nullptr) {
+                LOG("Failed to load tileset image: %s", imgName.c_str());
+                return false;  // Return failure if the tileset image is missing
+            }
+
 			mapData.tilesets.push_back(tileSet);
 		}
 
@@ -183,17 +189,17 @@ bool Map::Load(std::string path, std::string fileName)
         // L08 TODO 3: Create colliders
         // L08 TODO 7: Assign collider type
         // Later you can create a function here to load and create the colliders from the map
-        PhysBody* c1 = Engine::GetInstance().physics.get()->CreateRectangle(224 + 128, 544 + 32, 256, 64, STATIC);
-        c1->ctype = ColliderType::PLATFORM;
+        //PhysBody* c1 = Engine::GetInstance().physics.get()->CreateRectangle(224 + 128, 544 + 32, 256, 64, STATIC);
+        //c1->ctype = ColliderType::PLATFORM;
 
-        PhysBody* c2 = Engine::GetInstance().physics.get()->CreateRectangle(352 + 64, 384 + 32, 128, 64, STATIC);
-        c2->ctype = ColliderType::PLATFORM;
+        //PhysBody* c2 = Engine::GetInstance().physics.get()->CreateRectangle(352 + 64, 384 + 32, 128, 64, STATIC);
+        //c2->ctype = ColliderType::PLATFORM;
 
-        PhysBody* c3 = Engine::GetInstance().physics.get()->CreateRectangle(256, 704 + 32, 576, 64, STATIC);
-        c3->ctype = ColliderType::PLATFORM;
+        //PhysBody* c3 = Engine::GetInstance().physics.get()->CreateRectangle(256, 704 + 32, 576, 64, STATIC);
+        //c3->ctype = ColliderType::PLATFORM;
 
-        PhysBody* c4 = Engine::GetInstance().physics.get()->CreateRectangle(512 + 640, 704 + 32, 1024, 64, STATIC);
-        c4->ctype = ColliderType::PLATFORM;
+        //PhysBody* c4 = Engine::GetInstance().physics.get()->CreateRectangle(512 + 640, 704 + 32, 1024, 64, STATIC);
+        //c4->ctype = ColliderType::PLATFORM;
 
         ret = true;
 
@@ -248,12 +254,32 @@ bool Map::LoadProperties(pugi::xml_node& node, Properties& properties)
 {
     bool ret = false;
 
-    for (pugi::xml_node propertieNode = node.child("properties").child("property"); propertieNode; propertieNode = propertieNode.next_sibling("property"))
+    for (pugi::xml_node propertyNode = node.child("properties").child("property"); propertyNode; propertyNode = propertyNode.next_sibling("property"))
     {
         Properties::Property* p = new Properties::Property();
-        p->name = propertieNode.attribute("name").as_string();
-        p->value = propertieNode.attribute("value").as_bool(); // (!!) I'm assuming that all values are bool !!
+        p->name = propertyNode.attribute("name").as_string();
 
+        // Get the type of the property, defaulting to "string" if not specified
+        const char* type = propertyNode.attribute("type").as_string("string");
+
+        // Handle property types
+        if (strcmp(type, "bool") == 0) {
+            // Boolean property
+            p->value = propertyNode.attribute("value").as_bool();
+        }
+        else if (strcmp(type, "int") == 0) {
+            // Integer property
+            p->intValue = propertyNode.attribute("value").as_int();
+        }
+        else if (strcmp(type, "string") == 0) {
+            // String property
+            p->stringValue = propertyNode.attribute("value").as_string();
+        }
+        else {
+            LOG("Unknown property type: %s", type);  // Log unknown types for debugging
+        }
+
+        // Add the property to the list of properties
         properties.propertyList.push_back(p);
     }
 

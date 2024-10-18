@@ -77,6 +77,26 @@ bool Scene::Update(float dt)
     Engine::GetInstance().render.get()->camera.x += (targetCameraX - Engine::GetInstance().render.get()->camera.x) * lerpFactor;
     Engine::GetInstance().render.get()->camera.y += (targetCameraY - Engine::GetInstance().render.get()->camera.y) * lerpFactor;
 
+    // Different levels loaded with key inputs
+    if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
+    {
+        Engine::GetInstance().map->CleanUp();
+        Engine::GetInstance().map->Load("Assets/Maps/", "MapTemplate.tmx");
+        LOG("Loaded map1");
+    }
+    else if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
+    {
+        Engine::GetInstance().map->CleanUp();
+        Engine::GetInstance().map->Load("Assets/Maps/", "Level1.tmx");
+        LOG("Loaded map2");
+    }
+    else if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_3) == KEY_DOWN)
+    {
+        Engine::GetInstance().map->CleanUp();
+        Engine::GetInstance().map->Load("Assets/Maps/", "map3.tmx");
+        LOG("Loaded map3");
+    }
+
     return true;
 }
 
