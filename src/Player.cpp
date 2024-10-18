@@ -13,7 +13,8 @@ Player::Player() : Entity(EntityType::PLAYER)
 	name = "Player";
 }
 
-Player::~Player() {
+Player::~Player() 
+{
 
 }
 
@@ -58,6 +59,56 @@ bool Player::Start() {
 
 bool Player::Update(float dt)
 {
+	// Toggle God Mode when the G key is pressed
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F10) == KEY_DOWN) {
+		godMode = !godMode;
+		if (godMode) {
+			// Set physics body to kinematic so it ignores collisions
+			pbody->body->SetType(b2_kinematicBody);
+			LOG("God Mode Enabled");
+		}
+		else {
+			// Return to dynamic body when disabling godMode
+			pbody->body->SetType(b2_dynamicBody);
+			LOG("God Mode Disabled");
+		}
+	}
+
+	// If God Mode is enabled, allow free movement without physics or animations
+	if (godMode) {
+		b2Vec2 godVelocity(0, 0);
+
+		// Move left
+		if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
+			godVelocity.x = -godSpeed * dt;
+		}
+
+		// Move right
+		if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
+			godVelocity.x = godSpeed * dt;
+		}
+
+		// Move up
+		if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) {
+			godVelocity.y = -godSpeed * dt;
+		}
+
+		// Move down
+		if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) {
+			godVelocity.y = godSpeed * dt;
+		}
+
+		// Set the position directly
+		position.setX(position.getX() + godVelocity.x);
+		position.setY(position.getY() + godVelocity.y);
+
+		// Render the player idle
+		Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX(), (int)position.getY(), &currentAnimation->GetCurrentFrame());
+
+		// No further updates are needed in God Mode
+		return true;
+	}
+
 	// L08 TODO 5: Add physics to the player - updated player position using physics
 	b2Vec2 velocity = b2Vec2(0, -GRAVITY_Y);
 
@@ -74,7 +125,7 @@ bool Player::Update(float dt)
 	}
 
 	//Jump
-	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && jumpCount < 2) {
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && jumpCount < 2 && !godMode) {
 		// Apply an initial upward force
 		pbody->body->ApplyLinearImpulseToCenter(b2Vec2(0, -jumpForce), true);
 		jumpCount++;

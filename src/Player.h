@@ -34,6 +34,9 @@ public:
 
 	void Respawn();
 
+	bool godMode = false;
+	float godSpeed = 0.2f;
+
 public:
 
 	//Declare player parameters
