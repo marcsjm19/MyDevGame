@@ -182,6 +182,11 @@ bool Map::Load(std::string path, std::string fileName)
                 mapLayer->tiles.push_back(tileNode.attribute("gid").as_int());
             }
 
+            // Add colliders if this is the "Colliders" layer
+            if (mapLayer->name == "Colliders") {
+                AddCollidersFromLayer(mapLayer);  // Call the function to add colliders
+            }
+
             //add the layer to the map
             mapData.layers.push_back(mapLayer);
         }
@@ -237,6 +242,62 @@ bool Map::Load(std::string path, std::string fileName)
     mapLoaded = ret;
     return ret;
 }
+
+// Add the AddCollidersFromLayer function here
+void Map::AddCollidersFromLayer(MapLayer* layer)
+{
+    for (int i = 0; i < layer->width; i++)
+    {
+        for (int j = 0; j < layer->height; j++)
+        {
+            // Get the tile ID (gid) for this position
+            int gid = layer->Get(i, j);
+
+            // Check if the gid is 57, which indicates a collider
+            if (gid == 57)  // Assuming 57 is the collider GID
+            {
+                // Convert tile coordinates to world coordinates
+                Vector2D position = MapToWorld(i, j);
+
+                // Adjust the position to the center of the tile
+                position.setX(position.getX() + mapData.tileWidth / 2);
+                position.setY(position.getY() + mapData.tileHeight / 2);
+
+                // Create a rectangular collider at this position
+                PhysBody* collider = Engine::GetInstance().physics->CreateRectangle(position.getX(), position.getY(), mapData.tileWidth, mapData.tileHeight, STATIC);
+
+                // Set collider type
+                collider->ctype = ColliderType::PLATFORM;
+
+                LOG("Collider created at tile (%d, %d) with gid 57", i, j);
+            }
+        }
+    }
+}
+
+//ColliderType Map::DetermineColliderType(int gid)
+//{
+//    TileSet* tileSet = GetTilesetFromTileId(gid);
+//
+//    if (tileSet != nullptr)
+//    {
+//        Properties::Property* colliderTypeProperty = tileSet->GetProperty(gid, "collider_type");
+//        if (colliderTypeProperty != nullptr)
+//        {
+//            if (colliderTypeProperty->stringValue == "wall")
+//                return WALL;
+//            else if (colliderTypeProperty->stringValue == "platform")
+//                return PLATFORM;
+//            else if (colliderTypeProperty->stringValue == "hazard")
+//                return HAZARD;
+//            else if (colliderTypeProperty->stringValue == "interact")
+//                return INTERACT;
+//        }
+//    }
+//
+//    // Default to wall if no property is found
+//    return WALL;
+//}
 
 // L07: TODO 8: Create a method that translates x,y coordinates from map positions to world positions
 Vector2D Map::MapToWorld(int x, int y) const
@@ -297,4 +358,7 @@ Properties::Property* Properties::GetProperty(const char* name)
 
     return nullptr;
 }
+
+
+
 

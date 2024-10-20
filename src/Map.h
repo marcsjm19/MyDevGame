@@ -95,6 +95,8 @@ struct MapData
     std::list<MapLayer*> layers;
 };
 
+// Enum for different collider types
+
 class Map : public Module
 {
 public:
@@ -128,11 +130,17 @@ public:
     // L09: TODO 6: Load a group of properties 
     bool LoadProperties(pugi::xml_node& node, Properties& properties);
 
+    //Adding colliders from a layer
+    void AddCollidersFromLayer(MapLayer* layer);
+
 public: 
     std::string mapFileName;
     std::string mapPath;
 
 private:
+    // Function to determine collider type from a tile GID
+    //ColliderType DetermineColliderType(int gid);
+    
     bool mapLoaded;
     // L06: DONE 1: Declare a variable data of the struct MapData
     MapData mapData;

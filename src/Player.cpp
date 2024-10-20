@@ -145,7 +145,7 @@ bool Player::Update(float dt)
 	}
 
 	// If the player is dead, play the die animation
-	if (position.getY() >= 720 && !isDead)
+	if (position.getY() >= 1472 && !isDead)
 	{
 		isDead = true;
 		currentAnimation = &die;
@@ -242,7 +242,7 @@ void Player::Respawn()
 {
 	// Reset the player's position to the initial spawn point
 	Player::position.setX(2);
-	Player::position.setY(0);
+	Player::position.setY(6);
 
 	// Reset physics body position
 	pbody->body->SetTransform(b2Vec2(position.getX(), position.getY()), 0);
