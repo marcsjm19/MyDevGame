@@ -54,6 +54,7 @@ bool Player::Start() {
 	// L08 TODO 7: Assign collider type
 	pbody->ctype = ColliderType::PLAYER;
 
+	//pbody->body->GetFixtureList()->SetFriction(0);
 	return true;
 }
 
