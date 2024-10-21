@@ -124,7 +124,7 @@ bool Player::Update(float dt)
 		currentAnimation = &walking;
 	}
 
-	//Jump
+	// Jump
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && jumpCount < 2 && !godMode) {
 		// Apply an initial upward force
 		pbody->body->ApplyLinearImpulseToCenter(b2Vec2(0, -jumpForce), true);
@@ -132,10 +132,18 @@ bool Player::Update(float dt)
 		isJumping = true;
 	}
 
-	// If the player is jumpling, we don't want to apply gravity, we use the current velocity prduced by the jump
+	// If the player is jumping, we don't want to apply gravity, we use the current velocity produced by the jump
 	if (isJumping == true)
 	{
 		velocity = pbody->body->GetLinearVelocity();
+		// Move left while jumping
+		if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
+			velocity.x = -0.2 * dt;
+		}
+		// Move right while jumping
+		if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
+			velocity.x = 0.2 * dt;
+		}
 		currentAnimation = &jump;
 	}
 
@@ -145,7 +153,7 @@ bool Player::Update(float dt)
 	}
 
 	// If the player is dead, play the die animation
-	if (position.getY() >= 1472 && !isDead)
+	if ((position.getY() >= 1472 && !isDead) || Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_R) == KEY_REPEAT)
 	{
 		isDead = true;
 		currentAnimation = &die;
@@ -201,13 +209,24 @@ bool Player::CleanUp()
 
 // L08 TODO 6: Define OnCollision function for the player. 
 void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
+
+	// Get the world contact points (from Box2D contact data)
+	b2WorldManifold worldManifold;
+	physA->body->GetContactList()->contact->GetWorldManifold(&worldManifold);
+
+	// Get the normal of the collision (this tells the direction of the impact)
+	b2Vec2 normal = worldManifold.normal;
+
 	switch (physB->ctype)
 	{
 	case ColliderType::PLATFORM:
 		LOG("Collision PLATFORM");
-		//reset the jump flag when touching the ground
-		isJumping = false;
-		jumpCount = 0;
+		
+		// Reset jump only if the collision normal is pointing upwards (player landing from above)
+		if (normal.y < 0.3f) {  // Adjust this threshold if needed
+			isJumping = false;
+			jumpCount = 0;
+		}
 		break;
 	case ColliderType::ITEM:
 		LOG("Collision ITEM");
