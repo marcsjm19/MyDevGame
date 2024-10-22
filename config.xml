@@ -36,7 +36,7 @@
 						<frame x="192" y="96" w="32" h="32"/>
 						<frame x="224" y="96" w="32" h="32"/>
 					</walking>
-					<jump loop="true" speed ="0.15">
+					<jump loop="false" speed ="0.1">
 						<frame x="0" y="160" w="32" h="32"/>
 						<frame x="32" y="160" w="32" h="32"/>
 						<frame x="64" y="160" w="32" h="32"/>

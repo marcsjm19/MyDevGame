@@ -46,7 +46,7 @@ bool Player::Start() {
 
 	// L08 TODO 5: Add physics to the player - initialize physics body
 	//Engine::GetInstance().textures.get()->GetSize(texture, texW, texH);
-	pbody = Engine::GetInstance().physics.get()->CreateCircle((int)position.getX(), (int)position.getY(), texW / 2, bodyType::DYNAMIC);
+	pbody = Engine::GetInstance().physics.get()->CreateCircle((int)position.getX(), (int)position.getY(), texW / 3, bodyType::DYNAMIC);
 
 	// L08 TODO 6: Assign player class (using "this") to the listener of the pbody. This makes the Physics module to call the OnCollision method
 	pbody->listener = this;
@@ -128,7 +128,8 @@ bool Player::Update(float dt)
 	// Jump
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && jumpCount < 2 && !godMode) {
 		// Apply an initial upward force
-		pbody->body->ApplyLinearImpulseToCenter(b2Vec2(0, -jumpForce), true);
+		//pbody->body->ApplyLinearImpulseToCenter(b2Vec2(0, -jumpForce), true);
+		pbody->body->SetLinearVelocity(b2Vec2(0, -jumpForce * dt)); //+ pbody->body->GetLinearVelocity());
 		jumpCount++;
 		isJumping = true;
 	}
@@ -224,9 +225,10 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		LOG("Collision PLATFORM");
 		
 		// Reset jump only if the collision normal is pointing upwards (player landing from above)
-		if (normal.y < 0.3f) {  // Adjust this threshold if needed
+		if (normal.y <= -0.91 && normal.x <= 0.27 && normal.x >= -0.27) {  // Adjust this threshold if needed
 			isJumping = false;
 			jumpCount = 0;
+			jump.Reset();
 		}
 		break;
 	case ColliderType::ITEM:
