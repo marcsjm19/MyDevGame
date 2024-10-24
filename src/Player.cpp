@@ -143,8 +143,12 @@ bool Player::Update(float dt)
 			velocity.x = -0.2 * dt;
 		}
 		// Move right while jumping
-		if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
+		else if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
 			velocity.x = 0.2 * dt;
+		}
+		else
+		{
+			velocity.x = 0;
 		}
 		currentAnimation = &jump;
 	}
