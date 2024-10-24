@@ -224,12 +224,24 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 	case ColliderType::PLATFORM:
 		LOG("Collision PLATFORM");
 		
+		//// Reset jump only if the collision normal is pointing upwards (player landing from above)
+		//if (normal.y <= -0.91 && normal.x <= 0.27 && normal.x >= -0.27) {  // Adjust this threshold if needed
+		//	isJumping = false;
+		//	jumpCount = 0;
+		//	jump.Reset();
+		//}
 		// Reset jump only if the collision normal is pointing upwards (player landing from above)
-		if (normal.y <= -0.91 && normal.x <= 0.27 && normal.x >= -0.27) {  // Adjust this threshold if needed
+		if (normal.y <= -0.96) {  // Adjust this threshold if needed
 			isJumping = false;
 			jumpCount = 0;
 			jump.Reset();
 		}
+		//isJumping = false;
+		//jumpCount = 0;
+		//jump.Reset();
+		break;
+	case ColliderType::WALL:
+		LOG("Collision WALL");
 		break;
 	case ColliderType::ITEM:
 		LOG("Collision ITEM");
@@ -248,6 +260,9 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 	{
 	case ColliderType::PLATFORM:
 		LOG("End Collision PLATFORM");
+		break;
+	case ColliderType::WALL:
+		LOG("End Collision WALL");
 		break;
 	case ColliderType::ITEM:
 		LOG("End Collision ITEM");

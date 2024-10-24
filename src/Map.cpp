@@ -264,12 +264,31 @@ void Map::AddCollidersFromLayer(MapLayer* layer)
                 position.setY(position.getY() + mapData.tileHeight / 2);
 
                 // Create a rectangular collider at this position
-                PhysBody* collider = Engine::GetInstance().physics->CreateRectangle(position.getX(), position.getY(), mapData.tileWidth, mapData.tileHeight, STATIC);
+                PhysBody* collider = Engine::GetInstance().physics->CreateRectangle(position.getX(), position.getY(), mapData.tileWidth - 2, mapData.tileHeight - 2, STATIC);
 
                 // Set collider type
                 collider->ctype = ColliderType::PLATFORM;
 
                 LOG("Collider created at tile (%d, %d) with gid 57", i, j);
+            }
+
+            // Check if the gid is 58, which indicates a collider
+            if (gid == 58)  // Assuming 58 is the collider GID
+            {
+                // Convert tile coordinates to world coordinates
+                Vector2D position = MapToWorld(i, j);
+
+                // Adjust the position to the center of the tile
+                position.setX(position.getX() + mapData.tileWidth / 2);
+                position.setY(position.getY() + mapData.tileHeight / 2);
+
+                // Create a rectangular collider at this position
+                PhysBody* collider = Engine::GetInstance().physics->CreateRectangle(position.getX(), position.getY(), mapData.tileWidth - 2, mapData.tileHeight - 2, STATIC);
+
+                // Set collider type
+                collider->ctype = ColliderType::WALL;
+
+                LOG("Collider created at tile (%d, %d) with gid 58", i, j);
             }
         }
     }
