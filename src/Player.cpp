@@ -276,11 +276,11 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		LOG("Collision SPIKES");
 		isDead = true;
 		break;*/
-	case ColliderType::ITEM:
-		LOG("Collision ITEM");
-		Engine::GetInstance().audio.get()->PlayFx(pickCoinFxId);
-		Engine::GetInstance().physics.get()->DeletePhysBody(physB); // Deletes the body of the item from the physics world
-		break;
+	//case ColliderType::ITEM:
+	//	LOG("Collision ITEM");
+	//	Engine::GetInstance().audio.get()->PlayFx(pickCoinFxId);
+	//	Engine::GetInstance().physics.get()->DeletePhysBody(physB); // Deletes the body of the item from the physics world
+	//	break;
 	case ColliderType::UNKNOWN:
 		LOG("Collision UNKNOWN");
 		break;
@@ -301,9 +301,9 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 	/*case ColliderType::SPIKES:
 		LOG("End Collision SPIKES");
 		break;*/
-	case ColliderType::ITEM:
+	/*case ColliderType::ITEM:
 		LOG("End Collision ITEM");
-		break;
+		break;*/
 	case ColliderType::UNKNOWN:
 		LOG("End Collision UNKNOWN");
 		break;

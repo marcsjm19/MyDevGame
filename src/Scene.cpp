@@ -33,7 +33,7 @@ bool Scene::Awake()
 	player->SetParameters(configParameters.child("entities").child("player"));
 	
 	//L08 Create a new item using the entity manager and set the position to (200, 672) to test
-	Item* item1 = (Item*) Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM);
+	/*Item* item1 = (Item*) Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM);
 	item1->position = Vector2D(768, 992);
 
     Item* item2 = (Item*)Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM);
@@ -46,7 +46,7 @@ bool Scene::Awake()
 	item4->position = Vector2D(2976, 160);
 
 	Item* item5 = (Item*)Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM);
-	item5->position = Vector2D(3008, 160);
+	item5->position = Vector2D(3008, 160);*/
 	return ret;
 }
 
