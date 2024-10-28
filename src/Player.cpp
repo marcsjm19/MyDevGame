@@ -153,6 +153,35 @@ bool Player::Update(float dt)
 		currentAnimation = &jump;
 	}
 
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_LSHIFT) == KEY_DOWN && canDash && !godMode)
+	{
+		if (velocity.x >= 0)
+		{
+			velocity.x = dashSpeed * dt;
+		}
+		else
+		{
+			velocity.x = -dashSpeed * dt;
+		}
+		currentAnimation = &dash;
+		canDash = false;
+		isDashing = true;
+		dashTimer = 0.0f;
+	}
+	if (isDashing)
+	{
+		dashTimer += dt;
+		currentAnimation = &dash;
+		if (dashTimer >= dashDuration)
+		{
+			isDashing = false;
+			pbody->body->SetLinearVelocity(b2Vec2(0, 0));
+			canDash = true;
+		}
+
+
+	}
+
 	if (velocity.x == 0 && currentAnimation != &die && !isDead)
 	{
 		currentAnimation = &idle;
