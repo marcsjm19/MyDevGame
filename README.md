@@ -1,4 +1,5 @@
 # Development-Project
+This is a 2D platformer for the subject of Game Development made by students in CITM. The game is a simple platformer where the player jumps and dashes through diverse obstacles. Right now only 1 level is implemented with the basics for player movement and dying/repawning.
 
 ## Authors
 * Marc San José Martinez - https://github.com/Marcsjm19
