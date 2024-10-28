@@ -68,6 +68,10 @@ bool Player::Update(float dt)
 			// Set physics body to kinematic so it ignores collisions
 			pbody->body->SetType(b2_kinematicBody);
 			LOG("God Mode Enabled");
+			
+			// Stop the player's movement by setting its velocity to zero
+			pbody->body->SetLinearVelocity(b2Vec2(0, 0));
+			LOG("God Mode Enabled");
 		}
 		else {
 			// Return to dynamic body when disabling godMode
