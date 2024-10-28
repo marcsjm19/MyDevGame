@@ -111,6 +111,8 @@ private:
 	PerfTimer frameTime;
 	PerfTimer lastSecFrameTime;
 
+	bool isFpsCapEnabled = true;  // FPS cap is enabled by default
+
 	int frameCount = 0;
 	int framesPerSecond = 0;
 	int lastSecFrameCount = 0;
