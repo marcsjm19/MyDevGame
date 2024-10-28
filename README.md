@@ -2,11 +2,11 @@
 This is a 2D platformer for the subject of Game Development made by students in CITM. The game is a simple platformer where the player jumps and dashes through diverse obstacles. Right now only 1 level is implemented with the basics for player movement and dying/repawning.
 
 ## Authors
-* Marc San José Martinez - https://github.com/Marcsjm19
+* Marc San JosÃ© Martinez - https://github.com/Marcsjm19
 * Marc Gallardo Quesada - https://github.com/Marchusky
 
 ## Tasks
-* Marc San José Martinez:
+* Marc San JosÃ© Martinez:
 ** Camera
 ** Player
 ** Collider types
@@ -21,7 +21,7 @@ https://github.com/Marcsjm19/MyDevGame
 
 ## Controls
 
-###Debug
+### Debug
 * 1: start level 1
 * 2: start testing level
 * R: respawn
@@ -29,7 +29,7 @@ https://github.com/Marcsjm19/MyDevGame
 * F10: godmode
 * F11: frame cap 60fps
 
-###Gameplay
+### Gameplay
 * A: left
 * D: right
 * SPACE: jump
@@ -45,7 +45,7 @@ https://github.com/Marcsjm19/MyDevGame
 
 MIT License
 
-Copyright (c) 2024 Marc San José Martinez - Marc Gallardo Quesada
+Copyright (c) 2024 Marc San JosÃ© Martinez - Marc Gallardo Quesada
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
