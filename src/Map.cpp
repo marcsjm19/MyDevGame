@@ -191,49 +191,34 @@ bool Map::Load(std::string path, std::string fileName)
             mapData.layers.push_back(mapLayer);
         }
 
-        for (pugi::xml_node objectGroupNode = mapFileXML.child("map").child("objectgroup"); objectGroupNode != NULL; objectGroupNode = objectGroupNode.next_sibling("objectgroup"))
-        {
-			// L09: TODO 5: Load the properties of the object group
-			Properties properties;
-			LoadProperties(objectGroupNode, properties);
+   //     for (pugi::xml_node objectGroupNode = mapFileXML.child("map").child("objectgroup"); objectGroupNode != NULL; objectGroupNode = objectGroupNode.next_sibling("objectgroup"))
+   //     {
+			//// L09: TODO 5: Load the properties of the object group
+			//Properties properties;
+			//LoadProperties(objectGroupNode, properties);
 
-			// L09: TODO 4: Load the objects in the object group
-            for (pugi::xml_node objectNode = objectGroupNode.child("object"); objectNode != NULL; objectNode = objectNode.next_sibling("object"))
-            {
-                // L09: TODO 5: Load the properties of the object
-                Properties objectProperties;
-                LoadProperties(objectNode, objectProperties);
+			//// L09: TODO 4: Load the objects in the object group
+   //         for (pugi::xml_node objectNode = objectGroupNode.child("object"); objectNode != NULL; objectNode = objectNode.next_sibling("object"))
+   //         {
+   //             // L09: TODO 5: Load the properties of the object
+   //             Properties objectProperties;
+   //             LoadProperties(objectNode, objectProperties);
 
-                // L09: TODO 6: Load the object type
-                std::string objectType = objectNode.attribute("type").as_string();
+   //             // L09: TODO 6: Load the object type
+   //             std::string objectType = objectNode.attribute("type").as_string();
 
-                // L09: TODO 7: Load the object position
-                int x = objectNode.attribute("x").as_int();
-                int y = objectNode.attribute("y").as_int();
+   //             // L09: TODO 7: Load the object position
+   //             int x = objectNode.attribute("x").as_int();
+   //             int y = objectNode.attribute("y").as_int();
 
-                // L09: TODO 8: Load the object size
-                int width = objectNode.attribute("width").as_int();
-                int height = objectNode.attribute("height").as_int();
+   //             // L09: TODO 8: Load the object size
+   //             int width = objectNode.attribute("width").as_int();
+   //             int height = objectNode.attribute("height").as_int();
 
-                // L09: TODO 9: Load the object name
-                std::string objectName = objectNode.attribute("name").as_string();
-            }
-        }
-
-        // L08 TODO 3: Create colliders
-        // L08 TODO 7: Assign collider type
-        // Later you can create a function here to load and create the colliders from the map
-        //PhysBody* c1 = Engine::GetInstance().physics.get()->CreateRectangle(224 + 128, 544 + 32, 256, 64, STATIC);
-        //c1->ctype = ColliderType::PLATFORM;
-
-        //PhysBody* c2 = Engine::GetInstance().physics.get()->CreateRectangle(352 + 64, 384 + 32, 128, 64, STATIC);
-        //c2->ctype = ColliderType::PLATFORM;
-
-        //PhysBody* c3 = Engine::GetInstance().physics.get()->CreateRectangle(256, 704 + 32, 576, 64, STATIC);
-        //c3->ctype = ColliderType::PLATFORM;
-
-        //PhysBody* c4 = Engine::GetInstance().physics.get()->CreateRectangle(512 + 640, 704 + 32, 1024, 64, STATIC);
-        //c4->ctype = ColliderType::PLATFORM;
+   //             // L09: TODO 9: Load the object name
+   //             std::string objectName = objectNode.attribute("name").as_string();
+   //         }
+   //     }
 
         ret = true;
 
@@ -325,61 +310,37 @@ void Map::AddCollidersFromLayer(MapLayer* layer)
     }
 }
 
-void Map::AddCollidersFromObjectLayer(MapLayer* layer)
-{
-    for (int i = 0; i < layer->width; i++)
-    {
-        for (int j = 0; j < layer->height; j++)
-        {
-            for (int k = 0; k < layer->id; k++)
-            {
-                // Get the tile ID (gid) for this position
-                int id = layer->Get(i, j);
-
-                if (id == k) 
-                {
-                    // Convert tile coordinates to world coordinates
-                    Vector2D position = MapToWorld(i, j);
-
-                    // Adjust the position to the center of the tile
-                    position.setX(position.getX() + mapData.tileWidth / 2);
-                    position.setY(position.getY() + mapData.tileHeight / 2);
-
-                    // Create a rectangular collider at this position
-                    PhysBody* collider = Engine::GetInstance().physics->CreateRectangle(position.getX(), position.getY(), mapData.tileWidth - 2, mapData.tileHeight - 2, STATIC);
-
-                    // Set collider type
-                    collider->ctype = ColliderType::SPIKES;
-
-                    LOG("Collider created at tile (%d, %d) with id", i, j);
-                }
-            }
-        }
-    }		
-}
-
-//ColliderType Map::DetermineColliderType(int gid)
+//void Map::AddCollidersFromObjectLayer(MapLayer* layer)
 //{
-//    TileSet* tileSet = GetTilesetFromTileId(gid);
-//
-//    if (tileSet != nullptr)
+//    for (int i = 0; i < layer->width; i++)
 //    {
-//        Properties::Property* colliderTypeProperty = tileSet->GetProperty(gid, "collider_type");
-//        if (colliderTypeProperty != nullptr)
+//        for (int j = 0; j < layer->height; j++)
 //        {
-//            if (colliderTypeProperty->stringValue == "wall")
-//                return WALL;
-//            else if (colliderTypeProperty->stringValue == "platform")
-//                return PLATFORM;
-//            else if (colliderTypeProperty->stringValue == "hazard")
-//                return HAZARD;
-//            else if (colliderTypeProperty->stringValue == "interact")
-//                return INTERACT;
-//        }
-//    }
+//            for (int k = 0; k < layer->id; k++)
+//            {
+//                // Get the tile ID (gid) for this position
+//                int id = layer->Get(i, j);
 //
-//    // Default to wall if no property is found
-//    return WALL;
+//                if (id == k) 
+//                {
+//                    // Convert tile coordinates to world coordinates
+//                    Vector2D position = MapToWorld(i, j);
+//
+//                    // Adjust the position to the center of the tile
+//                    position.setX(position.getX() + mapData.tileWidth / 2);
+//                    position.setY(position.getY() + mapData.tileHeight / 2);
+//
+//                    // Create a rectangular collider at this position
+//                    PhysBody* collider = Engine::GetInstance().physics->CreateRectangle(position.getX(), position.getY(), mapData.tileWidth - 2, mapData.tileHeight - 2, STATIC);
+//
+//                    // Set collider type
+//                    collider->ctype = ColliderType::SPIKES;
+//
+//                    LOG("Collider created at tile (%d, %d) with id", i, j);
+//                }
+//            }
+//        }
+//    }		
 //}
 
 // L07: TODO 8: Create a method that translates x,y coordinates from map positions to world positions

@@ -86,22 +86,22 @@ bool Player::Update(float dt)
 
 		// Move left
 		if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
-			godVelocity.x = -godSpeed * dt;
+			godVelocity.x = -godSpeed * 16;
 		}
 
 		// Move right
 		if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
-			godVelocity.x = godSpeed * dt;
+			godVelocity.x = godSpeed * 16;
 		}
 
 		// Move up
 		if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) {
-			godVelocity.y = -godSpeed * dt;
+			godVelocity.y = -godSpeed * 16;
 		}
 
 		// Move down
 		if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) {
-			godVelocity.y = godSpeed * dt;
+			godVelocity.y = godSpeed * 16;
 		}
 
 		// Set the position directly
@@ -120,13 +120,13 @@ bool Player::Update(float dt)
 
 	// Move left
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
-		velocity.x = -0.2 * dt;
+		velocity.x = -0.2 * 16;
 		currentAnimation = &walking;
 	}
 
 	// Move right
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
-		velocity.x = 0.2 * dt;
+		velocity.x = 0.2 * 16;
 		currentAnimation = &walking;
 	}
 
@@ -143,11 +143,11 @@ bool Player::Update(float dt)
 		velocity = pbody->body->GetLinearVelocity();
 		// Move left while jumping
 		if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
-			velocity.x = -0.2 * dt;
+			velocity.x = -0.2 * 16;
 		}
 		// Move right while jumping
 		else if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
-			velocity.x = 0.2 * dt;
+			velocity.x = 0.2 * 16;
 		}
 		else
 		{
@@ -160,11 +160,11 @@ bool Player::Update(float dt)
 	{
 		if (velocity.x >= 0)
 		{
-			velocity.x = dashSpeed * dt;
+			velocity.x = dashSpeed * 16;
 		}
 		else
 		{
-			velocity.x = -dashSpeed * dt;
+			velocity.x = -dashSpeed * 16;
 		}
 		currentAnimation = &dash;
 		canDash = false;
@@ -272,10 +272,10 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 	case ColliderType::WALL:
 		LOG("Collision WALL");
 		break;
-	case ColliderType::SPIKES:
+	/*case ColliderType::SPIKES:
 		LOG("Collision SPIKES");
 		isDead = true;
-		break;
+		break;*/
 	case ColliderType::ITEM:
 		LOG("Collision ITEM");
 		Engine::GetInstance().audio.get()->PlayFx(pickCoinFxId);
@@ -298,9 +298,9 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 		break;
 	case ColliderType::WALL:
 		LOG("End Collision WALL");
-	case ColliderType::SPIKES:
+	/*case ColliderType::SPIKES:
 		LOG("End Collision SPIKES");
-		break;
+		break;*/
 	case ColliderType::ITEM:
 		LOG("End Collision ITEM");
 		break;
