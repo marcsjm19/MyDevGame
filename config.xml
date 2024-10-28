@@ -18,9 +18,9 @@
   </window>
 
 	<scene>
-		<map path="Assets/Maps/" name="MapTemplate.tmx"/>
+		<map path="Assets/Maps/" name="Level1.tmx"/>
 		<entities>
-			<player x="100" y="0" w="32" h ="32" texture="Assets/Textures/player.png">
+			<player x="100" y="320" w="32" h ="32" texture="Assets/Textures/player.png">
 				<animations>
 					<idle loop="true" speed ="0.1">
 						<frame x="0" y="0" w="32" h="32"/>

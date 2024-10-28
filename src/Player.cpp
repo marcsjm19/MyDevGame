@@ -132,7 +132,7 @@ bool Player::Update(float dt)
 
 	// Jump
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && jumpCount < 2 && !godMode) {
-		pbody->body->SetLinearVelocity(b2Vec2(0, -jumpForce * dt));
+		pbody->body->SetLinearVelocity(b2Vec2(0, -jumpForce));
 		jumpCount++;
 		isJumping = true;
 	}
@@ -193,7 +193,8 @@ bool Player::Update(float dt)
 	}
 
 	// If the player is dead, play the die animation
-	if ((position.getY() >= 1472 && !isDead) || Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_R) == KEY_REPEAT)
+	if ((position.getY() >= 1440 && !isDead) || Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_R) == KEY_REPEAT || 
+		Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_2) == KEY_REPEAT)
 	{
 		isDead = true;
 		currentAnimation = &die;
@@ -314,7 +315,7 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 void Player::Respawn()
 {
 	// Reset the player's position to the initial spawn point
-	Player::position.setX(2);
+	Player::position.setX(3);
 	Player::position.setY(6);
 
 	// Reset physics body position
