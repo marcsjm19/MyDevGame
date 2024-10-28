@@ -132,6 +132,7 @@ public:
 
     //Adding colliders from a layer
     void AddCollidersFromLayer(MapLayer* layer);
+	void AddCollidersFromObjectLayer(MapLayer* layer);
 
 public: 
     std::string mapFileName;

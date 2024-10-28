@@ -191,6 +191,35 @@ bool Map::Load(std::string path, std::string fileName)
             mapData.layers.push_back(mapLayer);
         }
 
+        for (pugi::xml_node objectGroupNode = mapFileXML.child("map").child("objectgroup"); objectGroupNode != NULL; objectGroupNode = objectGroupNode.next_sibling("objectgroup"))
+        {
+			// L09: TODO 5: Load the properties of the object group
+			Properties properties;
+			LoadProperties(objectGroupNode, properties);
+
+			// L09: TODO 4: Load the objects in the object group
+            for (pugi::xml_node objectNode = objectGroupNode.child("object"); objectNode != NULL; objectNode = objectNode.next_sibling("object"))
+            {
+                // L09: TODO 5: Load the properties of the object
+                Properties objectProperties;
+                LoadProperties(objectNode, objectProperties);
+
+                // L09: TODO 6: Load the object type
+                std::string objectType = objectNode.attribute("type").as_string();
+
+                // L09: TODO 7: Load the object position
+                int x = objectNode.attribute("x").as_int();
+                int y = objectNode.attribute("y").as_int();
+
+                // L09: TODO 8: Load the object size
+                int width = objectNode.attribute("width").as_int();
+                int height = objectNode.attribute("height").as_int();
+
+                // L09: TODO 9: Load the object name
+                std::string objectName = objectNode.attribute("name").as_string();
+            }
+        }
+
         // L08 TODO 3: Create colliders
         // L08 TODO 7: Assign collider type
         // Later you can create a function here to load and create the colliders from the map
@@ -290,8 +319,43 @@ void Map::AddCollidersFromLayer(MapLayer* layer)
 
                 LOG("Collider created at tile (%d, %d) with gid 58", i, j);
             }
+
+
         }
     }
+}
+
+void Map::AddCollidersFromObjectLayer(MapLayer* layer)
+{
+    for (int i = 0; i < layer->width; i++)
+    {
+        for (int j = 0; j < layer->height; j++)
+        {
+            for (int k = 0; k < layer->id; k++)
+            {
+                // Get the tile ID (gid) for this position
+                int id = layer->Get(i, j);
+
+                if (id == k) 
+                {
+                    // Convert tile coordinates to world coordinates
+                    Vector2D position = MapToWorld(i, j);
+
+                    // Adjust the position to the center of the tile
+                    position.setX(position.getX() + mapData.tileWidth / 2);
+                    position.setY(position.getY() + mapData.tileHeight / 2);
+
+                    // Create a rectangular collider at this position
+                    PhysBody* collider = Engine::GetInstance().physics->CreateRectangle(position.getX(), position.getY(), mapData.tileWidth - 2, mapData.tileHeight - 2, STATIC);
+
+                    // Set collider type
+                    collider->ctype = ColliderType::SPIKES;
+
+                    LOG("Collider created at tile (%d, %d) with id", i, j);
+                }
+            }
+        }
+    }		
 }
 
 //ColliderType Map::DetermineColliderType(int gid)

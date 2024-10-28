@@ -7,6 +7,7 @@
 #include "Scene.h"
 #include "Log.h"
 #include "Physics.h"
+#include "EntityManager.h"
 
 Player::Player() : Entity(EntityType::PLAYER)
 {
@@ -127,9 +128,7 @@ bool Player::Update(float dt)
 
 	// Jump
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && jumpCount < 2 && !godMode) {
-		// Apply an initial upward force
-		//pbody->body->ApplyLinearImpulseToCenter(b2Vec2(0, -jumpForce), true);
-		pbody->body->SetLinearVelocity(b2Vec2(0, -jumpForce * dt)); //+ pbody->body->GetLinearVelocity());
+		pbody->body->SetLinearVelocity(b2Vec2(0, -jumpForce * dt));
 		jumpCount++;
 		isJumping = true;
 	}
@@ -171,12 +170,14 @@ bool Player::Update(float dt)
 	if (isDashing)
 	{
 		dashTimer += dt;
-		currentAnimation = &dash;
 		if (dashTimer >= dashDuration)
 		{
-			isDashing = false;
+			
 			pbody->body->SetLinearVelocity(b2Vec2(0, 0));
-			canDash = true;
+			if (dashTimer >= 1000) {
+				isDashing = false;
+				canDash = true;
+			}
 		}
 
 
@@ -256,28 +257,24 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 	{
 	case ColliderType::PLATFORM:
 		LOG("Collision PLATFORM");
-		
-		//// Reset jump only if the collision normal is pointing upwards (player landing from above)
-		//if (normal.y <= -0.91 && normal.x <= 0.27 && normal.x >= -0.27) {  // Adjust this threshold if needed
-		//	isJumping = false;
-		//	jumpCount = 0;
-		//	jump.Reset();
-		//}
 		// Reset jump only if the collision normal is pointing upwards (player landing from above)
 		if (normal.y <= -0.96) {  // Adjust this threshold if needed
 			isJumping = false;
 			jumpCount = 0;
 			jump.Reset();
 		}
-		//isJumping = false;
-		//jumpCount = 0;
-		//jump.Reset();
 		break;
 	case ColliderType::WALL:
 		LOG("Collision WALL");
 		break;
+	case ColliderType::SPIKES:
+		LOG("Collision SPIKES");
+		isDead = true;
+		break;
 	case ColliderType::ITEM:
 		LOG("Collision ITEM");
+		Engine::GetInstance().audio.get()->PlayFx(pickCoinFxId);
+		Engine::GetInstance().physics.get()->DeletePhysBody(physB); // Deletes the body of the item from the physics world
 		break;
 	case ColliderType::UNKNOWN:
 		LOG("Collision UNKNOWN");
@@ -296,6 +293,8 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 		break;
 	case ColliderType::WALL:
 		LOG("End Collision WALL");
+	case ColliderType::SPIKES:
+		LOG("End Collision SPIKES");
 		break;
 	case ColliderType::ITEM:
 		LOG("End Collision ITEM");

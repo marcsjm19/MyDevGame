@@ -69,8 +69,34 @@ bool Scene::Update(float dt)
     int cameraOffsetY = screenHeight / 4; // You can adjust this value to control vertical offset
 
     // Set camera to follow player position with the offset
-    int targetCameraX = -playerPos.getX() + (screenWidth / 2) + cameraOffsetX;
-	int targetCameraY = -playerPos.getY() + (screenHeight) - cameraOffsetY;
+    int targetCameraX = 0;
+    if (playerPos.getX() <= 480)
+    {
+        targetCameraX = -480 + (screenWidth / 2) + cameraOffsetX;
+    }
+	else if (playerPos.getX() >= 480 && playerPos.getX() <= 2407)
+    {
+		targetCameraX = -playerPos.getX() + (screenWidth / 2) + cameraOffsetX;
+    } 
+    else
+    {
+		targetCameraX = -2407 + (screenWidth / 2) + cameraOffsetX;
+    }
+
+    int targetCameraY = 0;
+    if (playerPos.getY() <= 543)
+    {
+		targetCameraY = -543 + (screenHeight / 2) + cameraOffsetY;
+    }
+	else if (playerPos.getY() >= 543 && playerPos.getY() <= 1302)
+	{
+		targetCameraY = -playerPos.getY() + (screenHeight / 2) + cameraOffsetY;
+	}
+	else
+    {
+        targetCameraY = -1302 + (screenHeight / 2) + cameraOffsetY;
+    }
+        
 
     // Smooth camera movement
     float lerpFactor = 0.1f; // Adjust this factor for more or less smoothness
