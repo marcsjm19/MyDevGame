@@ -257,6 +257,28 @@ bool Map::Load(std::string path, std::string fileName)
     return ret;
 }
 
+// L07: TODO 8: Create a method that translates x,y coordinates from map positions to world positions
+Vector2D Map::MapToWorld(int x, int y) const
+{
+    Vector2D ret;
+
+    ret.setX(x * mapData.tileWidth);
+    ret.setY(y * mapData.tileHeight);
+
+    return ret;
+}
+
+// L10: TODO 5: Add method WorldToMap to obtain  map coordinates from screen coordinates 
+Vector2D Map::WorldToMap(int x, int y) {
+
+    Vector2D ret(0, 0);
+
+    ret.setX(x / mapData.tileWidth);
+    ret.setY(y / mapData.tileHeight);
+
+    return ret;
+}
+
 // Add the AddCollidersFromLayer function here
 void Map::AddCollidersFromLayer(MapLayer* layer)
 {
@@ -343,17 +365,6 @@ void Map::AddCollidersFromLayer(MapLayer* layer)
 //    }		
 //}
 
-// L07: TODO 8: Create a method that translates x,y coordinates from map positions to world positions
-Vector2D Map::MapToWorld(int x, int y) const
-{
-    Vector2D ret;
-
-    ret.setX(x * mapData.tileWidth);
-    ret.setY(y * mapData.tileHeight);
-
-    return ret;
-}
-
 // L09: TODO 6: Load a group of properties from a node and fill a list with it
 bool Map::LoadProperties(pugi::xml_node& node, Properties& properties)
 {
@@ -389,6 +400,17 @@ bool Map::LoadProperties(pugi::xml_node& node, Properties& properties)
     }
 
     return ret;
+}
+
+MapLayer* Map::GetNavigationLayer() {
+    for (const auto& layer : mapData.layers) {
+        if (layer->properties.GetProperty("Navigation") != NULL &&
+            layer->properties.GetProperty("Navigation")->value) {
+            return layer;
+        }
+    }
+
+    return nullptr;
 }
 
 // L09: TODO 7: Implement a method to get the value of a custom property

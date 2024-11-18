@@ -32,6 +32,10 @@ public:
 		this->parameters = parameters;
 	}
 
+	void SetPosition(Vector2D pos);
+
+	Vector2D GetPosition();
+
 	void Respawn();
 
 	bool godMode = false;

@@ -124,6 +124,9 @@ public:
     // L07: TODO 8: Create a method that translates x,y coordinates from map positions to world positions
     Vector2D MapToWorld(int x, int y) const;
 
+    // L10: TODO 5: Add method WorldToMap to obtain  map coordinates from screen coordinates 
+    Vector2D WorldToMap(int x, int y);
+
     // L09: TODO 2: Implement function to the Tileset based on a tile id
     TileSet* GetTilesetFromTileId(int gid) const;
 
@@ -134,9 +137,29 @@ public:
     void AddCollidersFromLayer(MapLayer* layer);
 	void AddCollidersFromObjectLayer(MapLayer* layer);
 
+    int GetWidth() {
+        return mapData.width;
+    }
+
+    int GetHeight() {
+        return mapData.height;
+    }
+
+    int GetTileWidth() {
+        return mapData.tileWidth;
+    }
+
+    int GetTileHeight() {
+        return mapData.tileHeight;
+    }
+
+    
+
 public: 
     std::string mapFileName;
     std::string mapPath;
+
+    MapLayer* GetNavigationLayer();
 
 private:
     // Function to determine collider type from a tile GID

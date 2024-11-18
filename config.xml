@@ -63,6 +63,23 @@
 					</die>
 				</animations>
 			</player>
+			<enemies>
+				<enemy name="badguy" x="300" y="300" w="32" h="32" texture="Assets/Textures/enemy/Idle.png" gravity="true">
+					<animations>
+						<idle loop="true" speed ="0.5">
+							<frame x="0" y="0" w="32" h="32"/>
+							<frame x="32" y="0" w="32" h="32"/>
+							<frame x="64" y="0" w="32" h="32"/>
+							<frame x="96" y="0" w="32" h="32"/>
+							<frame x="128" y="0" w="32" h="32"/>
+							<frame x="160" y="0" w="32" h="32"/>
+							<frame x="192" y="0" w="32" h="32"/>
+							<frame x="224" y="0" w="32" h="32"/>
+							<frame x="256" y="0" w="32" h="32"/>
+						</idle>
+					</animations>
+				</enemy>
+			</enemies>
 		</entities>
 	</scene>
 </config>
