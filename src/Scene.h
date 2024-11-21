@@ -36,6 +36,11 @@ public:
 	// Return the player position
 	Vector2D GetPlayerPosition();
 
+	//L15 TODO 1: Implement the Load function
+	void LoadState();
+	//L15 TODO 2: Implement the Save function
+	void SaveState();
+
 private:
 	SDL_Texture* img;
 	SDL_Texture* mouseTileTex = nullptr;
