@@ -404,8 +404,8 @@ bool Map::LoadProperties(pugi::xml_node& node, Properties& properties)
 
 MapLayer* Map::GetNavigationLayer() {
     for (const auto& layer : mapData.layers) {
-        if (layer->properties.GetProperty("Navigation") != NULL &&
-            layer->properties.GetProperty("Navigation")->value) {
+        if (layer->properties.GetProperty("IsWalkable") != NULL &&
+            layer->properties.GetProperty("IsWalkable")->value) {
             return layer;
         }
     }

@@ -45,6 +45,10 @@ bool Player::Start() {
 
 	die.LoadAnimations(parameters.child("animations").child("die"));
 
+	dash.LoadAnimations(parameters.child("animations").child("dash"));
+
+	shoot.LoadAnimations(parameters.child("animations").child("shoot"));
+
 	// L08 TODO 5: Add physics to the player - initialize physics body
 	//Engine::GetInstance().textures.get()->GetSize(texture, texW, texH);
 	pbody = Engine::GetInstance().physics.get()->CreateCircle((int)position.getX(), (int)position.getY(), texW / 3, bodyType::DYNAMIC);
@@ -138,7 +142,7 @@ bool Player::Update(float dt)
 	}
 
 	// If the player is jumping, we don't want to apply gravity, we use the current velocity produced by the jump
-	if (isJumping == true)
+	if (isJumping)
 	{
 		velocity = pbody->body->GetLinearVelocity();
 		// Move left while jumping
@@ -166,25 +170,26 @@ bool Player::Update(float dt)
 		{
 			velocity.x = -dashSpeed * 16;
 		}
-		currentAnimation = &dash;
 		canDash = false;
 		isDashing = true;
-		dashTimer = 0.0f;
+		dash.Reset();
+		dashTimer = SDL_GetTicks();
+		currentAnimation = &dash;
 	}
 	if (isDashing)
 	{
-		dashTimer += dt;
-		if (dashTimer >= dashDuration)
+		currentAnimation = &dash;
+		Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX(), (int)position.getY(), &currentAnimation->GetCurrentFrame());
+		currentAnimation->Update();
+		if (currentAnimation->HasFinished())
 		{
-			
-			pbody->body->SetLinearVelocity(b2Vec2(0, 0));
-			if (dashTimer >= 1000) {
+			if (SDL_GetTicks() - dashTimer >= 1000) {
+				dash.Reset();
 				isDashing = false;
 				canDash = true;
+				return true;
 			}
 		}
-
-
 	}
 
 	if (velocity.x == 0 && currentAnimation != &die && !isDead)
@@ -219,6 +224,31 @@ bool Player::Update(float dt)
 			}
 		}
 		return true;  // Don't update the rest if the player is dead
+	}
+
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F) == KEY_DOWN && canShoot && !godMode)
+	{
+		canShoot = false;
+		isShooting = true;
+		currentAnimation = &shoot;
+		shoot.Reset();
+		shootTimer = SDL_GetTicks();
+	}
+
+	if (isShooting)
+	{
+		currentAnimation = &shoot;
+		Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX(), (int)position.getY(), &currentAnimation->GetCurrentFrame());
+		currentAnimation->Update();
+		if (currentAnimation->HasFinished())
+		{
+			if (SDL_GetTicks() - shootTimer >= 500) {
+				isShooting = false;
+				canShoot = true;
+				shoot.Reset();
+				return true;
+			}
+		}
 	}
 
 	// Apply the velocity to the player

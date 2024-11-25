@@ -60,8 +60,11 @@ public:
 	bool isDashing = false;
 	bool canDash = true;
 	float dashSpeed = 5.0f;
-	float dashDuration = 0.4f;
 	float dashTimer = 0.0f;
+
+	bool isShooting = false;
+	bool canShoot = true;
+	float shootTimer = 0.0f;
 
 	bool isDead = false;       // Tracks whether the player is dead
 	bool dieAnimationPlayed = false; // Tracks if the die animation has finished
@@ -74,4 +77,5 @@ public:
 	Animation jump;
 	Animation dash;
 	Animation die;
+	Animation shoot;
 };

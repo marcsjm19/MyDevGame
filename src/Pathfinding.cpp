@@ -146,7 +146,7 @@ bool Pathfinding::IsWalkable(int x, int y) {
     if (layerNav != nullptr) {
         if (x >= 0 && y >= 0 && x < map->GetWidth() && y < map->GetHeight()) {
             int gid = layerNav->Get(x, y);
-            if (gid != blockedGid) isWalkable = true;
+            if (gid != blockedGid1) isWalkable = true;
         }
     }
 
