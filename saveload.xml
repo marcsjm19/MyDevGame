@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<config>
+	<engine>
+		<title>My platformer game</title>
+		<maxFrameDuration value="16" />
+	</engine>
+	<render>
+		<vsync value="false" />
+	</render>
+	<window>
+		<resolution width="1280" height="720" scale="1" />
+		<fullscreen value="false" />
+		<borderless value="false" />
+		<resizable value="false" />
+		<fullscreen_window value="false" />
+	</window>
+	<scene>
+		<map path="Assets/Maps/" name="Level1.tmx" />
+		<entities>
+			<player x="228" y="302" w="32" h="32" texture="Assets/Textures/player.png">
+				<animations>
+					<idle loop="true" speed="0.1">
+						<frame x="0" y="0" w="32" h="32" />
+						<frame x="32" y="0" w="32" h="32" />
+					</idle>
+					<walking loop="true" speed="0.1">
+						<frame x="0" y="96" w="32" h="32" />
+						<frame x="32" y="96" w="32" h="32" />
+						<frame x="64" y="96" w="32" h="32" />
+						<frame x="96" y="96" w="32" h="32" />
+						<frame x="128" y="96" w="32" h="32" />
+						<frame x="160" y="96" w="32" h="32" />
+						<frame x="192" y="96" w="32" h="32" />
+						<frame x="224" y="96" w="32" h="32" />
+					</walking>
+					<jump loop="false" speed="0.1">
+						<frame x="0" y="160" w="32" h="32" />
+						<frame x="32" y="160" w="32" h="32" />
+						<frame x="64" y="160" w="32" h="32" />
+						<frame x="96" y="160" w="32" h="32" />
+						<frame x="128" y="160" w="32" h="32" />
+						<frame x="160" y="160" w="32" h="32" />
+						<frame x="192" y="160" w="32" h="32" />
+						<frame x="224" y="160" w="32" h="32" />
+					</jump>
+					<dash loop="false" speed="0.02">
+						<frame x="0" y="192" w="32" h="32" />
+						<frame x="32" y="192" w="32" h="32" />
+						<frame x="64" y="192" w="32" h="32" />
+					</dash>
+					<die loop="false" speed="0.06">
+						<frame x="0" y="224" w="32" h="32" />
+						<frame x="32" y="224" w="32" h="32" />
+						<frame x="64" y="224" w="32" h="32" />
+						<frame x="96" y="224" w="32" h="32" />
+						<frame x="128" y="224" w="32" h="32" />
+						<frame x="160" y="224" w="32" h="32" />
+						<frame x="192" y="224" w="32" h="32" />
+						<frame x="224" y="224" w="32" h="32" />
+					</die>
+					<shoot loop="false" speed="0.15">
+						<frame x="0" y="256" w="32" h="32" />
+						<frame x="32" y="256" w="32" h="32" />
+						<frame x="64" y="256" w="32" h="32" />
+						<frame x="96" y="256" w="32" h="32" />
+						<frame x="128" y="256" w="32" h="32" />
+						<frame x="160" y="256" w="32" h="32" />
+						<frame x="192" y="256" w="32" h="32" />
+						<frame x="224" y="256" w="32" h="32" />
+					</shoot>
+				</animations>
+			</player>
+			<enemies>
+				<enemy name="badguy" x="300" y="300" w="32" h="32" texture="Assets/Textures/enemy/Idle.png" gravity="true">
+					<animations>
+						<idle loop="true" speed="0.5">
+							<frame x="0" y="0" w="32" h="32" />
+							<frame x="32" y="0" w="32" h="32" />
+							<frame x="64" y="0" w="32" h="32" />
+							<frame x="96" y="0" w="32" h="32" />
+							<frame x="128" y="0" w="32" h="32" />
+							<frame x="160" y="0" w="32" h="32" />
+							<frame x="192" y="0" w="32" h="32" />
+							<frame x="224" y="0" w="32" h="32" />
+							<frame x="256" y="0" w="32" h="32" />
+						</idle>
+					</animations>
+				</enemy>
+			</enemies>
+		</entities>
+		<enemies />
+	</scene>
+</config>

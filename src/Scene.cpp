@@ -171,6 +171,14 @@ bool Scene::Update(float dt)
         enemyList[0]->ResetPath();
     }
 
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F5) == KEY_DOWN) {
+		SaveState();
+	}
+
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F6) == KEY_DOWN) {
+		LoadState();
+	}
+
     return true;
 }
 
@@ -207,7 +215,7 @@ Vector2D Scene::GetPlayerPosition()
 void Scene::LoadState() {
 
     pugi::xml_document loadFile;
-    pugi::xml_parse_result result = loadFile.load_file("config.xml");
+    pugi::xml_parse_result result = loadFile.load_file("saveload.xml");
 
     if (result == NULL)
     {
@@ -247,7 +255,7 @@ void Scene::SaveState() {
 
     //Player position
     sceneNode.child("entities").child("player").attribute("x").set_value(player->GetPosition().getX());
-    sceneNode.child("entities").child("player").attribute("y").set_value(player->GetPosition().getY());
+    sceneNode.child("entities").child("player").attribute("y").set_value(player->GetPosition().getY() - 8);
 
     //enemies
 	sceneNode.remove_child("enemies");
@@ -255,5 +263,5 @@ void Scene::SaveState() {
 
 
     //Saves the modifications to the XML 
-    loadFile.save_file("config.xml");
+    loadFile.save_file("saveload.xml");
 }

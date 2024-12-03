@@ -198,7 +198,7 @@ bool Player::Update(float dt)
 	}
 
 	// If the player is dead, play the die animation
-	if ((position.getY() >= 1440 && !isDead) || Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_R) == KEY_REPEAT || 
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_R) == KEY_REPEAT ||
 		Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_2) == KEY_REPEAT)
 	{
 		isDead = true;
@@ -301,6 +301,10 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		break;
 	case ColliderType::WALL:
 		LOG("Collision WALL");
+		break;
+	case ColliderType::DIE:
+		LOG("Collision DIE");
+		isDead = true;
 		break;
 	/*case ColliderType::SPIKES:
 		LOG("Collision SPIKES");
