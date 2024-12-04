@@ -306,6 +306,19 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		LOG("Collision DIE");
 		isDead = true;
 		break;
+	case ColliderType::CHECKPOINT:
+		LOG("Collision CHECKPOINT");
+		Engine::GetInstance().scene.get()->SaveState();
+		break;
+	case ColliderType::ENEMY:
+		LOG("Collision ENEMY");
+		if (normal.y >= 0.8) {  // Adjust this threshold if needed
+			Engine::GetInstance().physics.get()->DeletePhysBody(physB); // Deletes the body of the enemy from the physics world
+		}
+		else {
+			isDead = true;
+		}
+		break;
 	/*case ColliderType::SPIKES:
 		LOG("Collision SPIKES");
 		isDead = true;

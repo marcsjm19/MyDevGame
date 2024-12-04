@@ -355,10 +355,10 @@ void Map::AddCollidersFromLayer(MapLayer* layer)
                 position.setY(position.getY() + mapData.tileHeight / 2);
 
                 // Create a rectangular collider at this position
-                //PhysBody* collider = Engine::GetInstance().physics->CreateRectangle(position.getX(), position.getY(), mapData.tileWidth - 2, mapData.tileHeight - 2, STATIC);
+                PhysBody* collider = Engine::GetInstance().physics->CreateRectangle(position.getX(), position.getY() + 16, mapData.tileWidth - 2, 0.1, STATIC);
 
                 // Set collider type
-                //collider->ctype = ColliderType::CHECKPOINT;
+                collider->ctype = ColliderType::CHECKPOINT;
 
                 LOG("Collider created at tile (%d, %d) with gid 60", i, j);
             }

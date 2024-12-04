@@ -254,8 +254,8 @@ void Scene::SaveState() {
     //Save info to XML 
 
     //Player position
-    sceneNode.child("entities").child("player").attribute("x").set_value(player->GetPosition().getX());
-    sceneNode.child("entities").child("player").attribute("y").set_value(player->GetPosition().getY() - 8);
+    sceneNode.child("entities").child("player").attribute("x").set_value(player->GetPosition().getX() - 16);
+    sceneNode.child("entities").child("player").attribute("y").set_value(player->GetPosition().getY() - 16);
 
     //enemies
 	sceneNode.remove_child("enemies");
