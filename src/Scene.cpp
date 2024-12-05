@@ -233,10 +233,16 @@ void Scene::LoadState() {
     player->SetPosition(playerPos);
 
     //enemies
-    for (int i = 0; i < enemyList.size(); i++) {
-        Vector2D enemyPos = Vector2D(sceneNode.child("entities").child("enemies").child("enemy").attribute("x").as_int(),
-            sceneNode.child("entities").child("enemies").child("enemy").attribute("y").as_int() - 12);
-        enemyList[i]->SetPosition(enemyPos);
+	if (enemyList.size() == 0) {
+		LOG("No enemies to load");
+		return;
+	}
+    else {
+        for (int i = 0; i < enemyList.size(); i++) {
+            Vector2D enemyPos = Vector2D(sceneNode.child("entities").child("enemies").child("enemy").attribute("x").as_int(),
+                sceneNode.child("entities").child("enemies").child("enemy").attribute("y").as_int() - 12);
+            enemyList[i]->SetPosition(enemyPos);
+        }
     }
 
 }
@@ -262,14 +268,21 @@ void Scene::SaveState() {
     sceneNode.child("entities").child("player").attribute("y").set_value(player->GetPosition().getY() - 16);
 
     //enemies
-	sceneNode.remove_child("enemies");
-	pugi::xml_node enemiesNode = sceneNode.append_child("enemies");
-	for (int i = 0; i < enemyList.size(); i++) {
-		pugi::xml_node enemyNode = enemiesNode.append_child("enemy");
-		enemyNode.attribute("x").set_value(enemyList[i]->GetPosition().getX());
-		enemyNode.attribute("y").set_value(enemyList[i]->GetPosition().getY());
-	}
+    sceneNode.remove_child("enemies");
+    pugi::xml_node enemiesNode = sceneNode.append_child("enemies");
 
+    if (enemyList.size() == 0) {
+        LOG("No enemies to save");
+        return;
+    }
+    else
+    {
+        for (int i = 0; i < enemyList.size(); i++) {
+            pugi::xml_node enemyNode = enemiesNode.append_child("enemy");
+            enemyNode.attribute("x").set_value(enemyList[i]->GetPosition().getX());
+            enemyNode.attribute("y").set_value(enemyList[i]->GetPosition().getY());
+        }
+    }
 
     //Saves the modifications to the XML 
     loadFile.save_file("saveload.xml");
