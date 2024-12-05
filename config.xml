@@ -61,7 +61,7 @@
 						<frame x="192" y="224" w="32" h="32"/>
 						<frame x="224" y="224" w="32" h="32"/>
 					</die>
-					<shoot loop="false" speed ="0.15">
+					<shoot loop="false" speed ="0.2">
 						<frame x="0" y="256" w="32" h="32"/>
 						<frame x="32" y="256" w="32" h="32"/>
 						<frame x="64" y="256" w="32" h="32"/>
@@ -70,6 +70,8 @@
 						<frame x="160" y="256" w="32" h="32"/>
 						<frame x="192" y="256" w="32" h="32"/>
 						<frame x="224" y="256" w="32" h="32"/>
+						<frame x="0" y="0" w="32" h="32"/>
+						<frame x="32" y="0" w="32" h="32"/>
 					</shoot>
 				</animations>
 			</player>

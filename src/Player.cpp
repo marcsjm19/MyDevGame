@@ -59,6 +59,8 @@ bool Player::Start() {
 	// L08 TODO 7: Assign collider type
 	pbody->ctype = ColliderType::PLAYER;
 
+	Engine::GetInstance().scene.get()->SaveState();  // Save the initial state of the player
+
 	//pbody->body->GetFixtureList()->SetFriction(0);
 	return true;
 }
@@ -238,7 +240,7 @@ bool Player::Update(float dt)
 	if (isShooting)
 	{
 		currentAnimation = &shoot;
-		Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX(), (int)position.getY(), &currentAnimation->GetCurrentFrame());
+		//Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX(), (int)position.getY(), &currentAnimation->GetCurrentFrame());
 		currentAnimation->Update();
 		if (currentAnimation->HasFinished())
 		{
@@ -312,11 +314,14 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		break;
 	case ColliderType::ENEMY:
 		LOG("Collision ENEMY");
-		if (normal.y >= 0.8) {  // Adjust this threshold if needed
+		if (normal.y >= 0.8 || currentAnimation == &shoot) {  // Adjust this threshold if needed
 			Engine::GetInstance().physics.get()->DeletePhysBody(physB); // Deletes the body of the enemy from the physics world
 		}
 		else {
 			isDead = true;
+			currentAnimation = &die;
+			die.Reset();
+			deathTime = SDL_GetTicks();
 		}
 		break;
 	/*case ColliderType::SPIKES:
@@ -362,11 +367,12 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 void Player::Respawn()
 {
 	// Reset the player's position to the initial spawn point
-	Player::position.setX(3);
-	Player::position.setY(6);
+	//Player::position.setX(3);
+	//Player::position.setY(6);
+	Engine::GetInstance().scene.get()->LoadState();  // Load the last saved state
 
 	// Reset physics body position
-	pbody->body->SetTransform(b2Vec2(position.getX(), position.getY()), 0);
+	//pbody->body->SetTransform(b2Vec2(position.getX(), position.getY()), 0);
 
 	// Reset other variables like jump count, health, etc.
 	currentAnimation = &idle;

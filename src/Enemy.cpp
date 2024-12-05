@@ -48,6 +48,8 @@ bool Enemy::Start() {
 	pathfinding = new Pathfinding();
 	ResetPath();
 
+	Engine::GetInstance().scene.get()->SaveState();
+
 	return true;
 }
 
@@ -116,7 +118,7 @@ bool Enemy::Update(float dt)
 	currentAnimation->Update();
 
 	// Draw pathfinding 
-	pathfinding->DrawPath();
+	//pathfinding->DrawPath();
 
 	return true;
 }
@@ -134,6 +136,10 @@ void Enemy::SetPosition(Vector2D pos) {
 }
 
 Vector2D Enemy::GetPosition() {
+	if (pbody == nullptr) {
+		// Handle the error, maybe log it or throw an exception
+		return Vector2D(); // Return a default or error value
+	}
 	b2Vec2 bodyPos = pbody->body->GetTransform().p;
 	Vector2D pos = Vector2D(METERS_TO_PIXELS(bodyPos.x), METERS_TO_PIXELS(bodyPos.y));
 	return pos;
