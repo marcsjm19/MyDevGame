@@ -49,6 +49,6 @@ private:
 	PhysBody* pbody;
 	Pathfinding* pathfinding;
 
-	bool alive;
+	bool alive = true;
 	Vector2D position;
 };

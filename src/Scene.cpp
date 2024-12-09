@@ -11,6 +11,8 @@
 #include "Player.h"
 #include "Map.h"
 #include "Item.h"
+#include "Enemy.h"
+#include "Physics.h"
 
 Scene::Scene() : Module()
 {
@@ -241,16 +243,16 @@ void Scene::LoadState() {
     player->SetPosition(playerPos);
 
     // Load enemies
-    pugi::xml_node enemiesNode = sceneNode.child("enemies");
+    pugi::xml_node enemiesNode = sceneNode.child("entities").child("enemies");
     for (pugi::xml_node enemyNode = enemiesNode.child("enemy"); enemyNode; enemyNode = enemyNode.next_sibling("enemy")) {
-        bool isAlive = enemyNode.attribute("alive").as_bool();
+        bool isAlive = enemyNode.append_attribute("alive").as_bool();
         if (isAlive) {
-            Vector2D enemyPos = Vector2D(enemyNode.attribute("x").as_int(),
-                enemyNode.attribute("y").as_int());
+            Vector2D enemyPos = Vector2D(enemyNode.append_attribute("x").as_int(),
+                enemyNode.append_attribute("y").as_int());
             // Find an existing enemy or create a new one if necessary
             Enemy* enemy = FindOrCreateEnemy();
-            enemy->SetPosition(enemyPos);
             enemy->SetAlive(true);
+			enemy->SetPosition(enemyPos);
         }
     }
 
@@ -288,12 +290,12 @@ void Scene::SaveState() {
     sceneNode.child("entities").child("player").attribute("y").set_value(player->GetPosition().getY() - 16);
 
     // Save enemies
-    pugi::xml_node enemiesNode = sceneNode.child("enemies");
+    pugi::xml_node enemiesNode = sceneNode.child("entities").child("enemies");
     for (const auto& enemy : enemyList) {
-        pugi::xml_node enemyNode = enemiesNode.append_child("enemy");
-        enemyNode.append_attribute("x") = enemy->GetPosition().getX();
-        enemyNode.append_attribute("y") = enemy->GetPosition().getY();
-        enemyNode.append_attribute("alive") = enemy->IsAlive();
+        pugi::xml_node enemyNode = enemiesNode.child("enemy");
+        enemyNode.attribute("x") = enemy->GetPosition().getX() - 16;
+        enemyNode.attribute("y") = enemy->GetPosition().getY() - 16;
+        enemyNode.attribute("alive") = enemy->IsAlive();
     }
 
     //Saves the modifications to the XML 
