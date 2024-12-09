@@ -32,6 +32,10 @@ public:
 
 	void ResetPath();
 
+	void OnCollision(PhysBody* physA, PhysBody* physB);
+
+	void OnCollisionEnd(PhysBody* physA, PhysBody* physB);
+
 	bool IsAlive() const { return alive; }
 
 	void SetAlive(bool isAlive) { alive = isAlive; }

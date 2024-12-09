@@ -84,6 +84,7 @@ public:
 	void EndContact(b2Contact* contact);
 
 	void DeletePhysBody(PhysBody* physbody);
+	bool IsPendingToDelete(PhysBody* physBody);
 
 private:
 

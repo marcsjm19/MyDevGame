@@ -326,7 +326,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 	case ColliderType::ENEMY:
 		LOG("Collision ENEMY");
 		if (normal.y >= 0.8 || (currentAnimation == &shoot && (normal.x <= -0.8 || normal.x >= 0.8))) {  // Adjust this threshold if needed
-			//Engine::GetInstance().audio.get()->PlayFx(hitFxId);
+			
 			Engine::GetInstance().physics.get()->DeletePhysBody(physB); // Deletes the body of the enemy from the physics world
 			pugi::xml_document doc;
 			pugi::xml_parse_result result = doc.load_file("saveload.xml");
