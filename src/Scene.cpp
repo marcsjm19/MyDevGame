@@ -66,6 +66,9 @@ bool Scene::Start()
 	//L06 TODO 3: Call the function to load the map. 
 	Engine::GetInstance().map->Load("Assets/Maps/", "Level1.tmx");
 
+    int musicId = Engine::GetInstance().audio.get()->PlayMusic("Assets/Audio/Music/music_spy.ogg", -1);
+
+
 	return true;
 }
 
@@ -245,17 +248,21 @@ void Scene::LoadState() {
     // Load enemies
     pugi::xml_node enemiesNode = sceneNode.child("entities").child("enemies");
     for (pugi::xml_node enemyNode = enemiesNode.child("enemy"); enemyNode; enemyNode = enemyNode.next_sibling("enemy")) {
-        bool isAlive = enemyNode.append_attribute("alive").as_bool();
-        if (isAlive) {
-            Vector2D enemyPos = Vector2D(enemyNode.append_attribute("x").as_int(),
-                enemyNode.append_attribute("y").as_int());
+        bool isAlive = enemyNode.attribute("alive").as_bool();
+		if (!isAlive) {
+            Vector2D enemyPos = Vector2D(enemyNode.attribute("x").as_int(),
+                enemyNode.attribute("y").as_int());
             // Find an existing enemy or create a new one if necessary
             Enemy* enemy = FindOrCreateEnemy();
-            enemy->SetAlive(true);
-			enemy->SetPosition(enemyPos);
-        }
-    }
+            enemy->SetAlive(isAlive);
+            enemy->SetPosition(enemyPos);
+		}
+       
 
+    }
+    
+	int loadFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/load.wav");
+	Engine::GetInstance().audio->PlayFx(loadFx);
 }
 
 Enemy* Scene::FindOrCreateEnemy() {
@@ -272,8 +279,8 @@ Enemy* Scene::FindOrCreateEnemy() {
 // L15 TODO 2: Implement the Save function
 void Scene::SaveState() {
 
-    pugi::xml_document loadFile;
-    pugi::xml_parse_result result = loadFile.load_file("config.xml");
+    pugi::xml_document saveFile;
+    pugi::xml_parse_result result = saveFile.load_file("config.xml");
 
     if (result == NULL)
     {
@@ -281,7 +288,7 @@ void Scene::SaveState() {
         return;
     }
 
-    pugi::xml_node sceneNode = loadFile.child("config").child("scene");
+    pugi::xml_node sceneNode = saveFile.child("config").child("scene");
 
     //Save info to XML 
 
@@ -291,6 +298,7 @@ void Scene::SaveState() {
 
     // Save enemies
     pugi::xml_node enemiesNode = sceneNode.child("entities").child("enemies");
+    //enemiesNode.remove_children();
     for (const auto& enemy : enemyList) {
         pugi::xml_node enemyNode = enemiesNode.child("enemy");
         enemyNode.attribute("x") = enemy->GetPosition().getX() - 16;
@@ -299,5 +307,8 @@ void Scene::SaveState() {
     }
 
     //Saves the modifications to the XML 
-    loadFile.save_file("saveload.xml");
+    saveFile.save_file("saveload.xml");
+
+	int saveFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/save.wav");
+	Engine::GetInstance().audio->PlayFx(saveFx);
 }

@@ -143,6 +143,8 @@ bool Player::Update(float dt)
 		pbody->body->SetLinearVelocity(b2Vec2(0, -jumpForce));
 		jumpCount++;
 		isJumping = true;
+		int jumpFxId = Engine::GetInstance().audio.get()->LoadFx("Assets/Audio/Fx/jump.wav");
+		Engine::GetInstance().audio.get()->PlayFx(jumpFxId);
 	}
 
 	// If the player is jumping, we don't want to apply gravity, we use the current velocity produced by the jump
@@ -179,6 +181,9 @@ bool Player::Update(float dt)
 		dash.Reset();
 		dashTimer = SDL_GetTicks();
 		currentAnimation = &dash;
+
+		int dashFxId = Engine::GetInstance().audio.get()->LoadFx("Assets/Audio/Fx/dash.wav");
+		Engine::GetInstance().audio.get()->PlayFx(dashFxId);
 	}
 	if (isDashing)
 	{
@@ -214,6 +219,8 @@ bool Player::Update(float dt)
 	if (isDead)
 	{
 		currentAnimation = &die;
+		int deathFxId = Engine::GetInstance().audio.get()->LoadFx("Assets/Audio/Fx/die.wav");
+		Engine::GetInstance().audio.get()->PlayFx(deathFxId);
 		Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX(), (int)position.getY(), &currentAnimation->GetCurrentFrame());
 		currentAnimation->Update();
 
@@ -237,6 +244,8 @@ bool Player::Update(float dt)
 		currentAnimation = &shoot;
 		shoot.Reset();
 		shootTimer = SDL_GetTicks();
+		int shootFxId = Engine::GetInstance().audio.get()->LoadFx("Assets/Audio/Fx/attack.wav");
+		Engine::GetInstance().audio.get()->PlayFx(shootFxId);
 	}
 
 	if (isShooting)
@@ -322,7 +331,11 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 			pugi::xml_document doc;
 			pugi::xml_parse_result result = doc.load_file("saveload.xml");
 			pugi::xml_node enemyNode = doc.child("config").child("scene").child("entities").child("enemies").child("enemy");
-			enemyNode.attribute("alive").as_bool() == false;
+			enemyNode.attribute("alive").set_value("false");
+			enemyNode.remove_child("enemy");
+
+			int enemykilledFxId = Engine::GetInstance().audio.get()->LoadFx("Assets/Audio/Fx/enemykilled.wav");
+			Engine::GetInstance().audio.get()->PlayFx(enemykilledFxId);
 		}
 		else {
 			isDead = true;

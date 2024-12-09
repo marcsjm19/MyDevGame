@@ -38,6 +38,11 @@ bool Enemy::Start() {
 	//Add a physics to an item - initialize the physics body
 	pbody = Engine::GetInstance().physics.get()->CreateCircle((int)position.getX() + texH / 2, (int)position.getY() + texH / 2, texH / 2, bodyType::DYNAMIC);
 
+	if (pbody == nullptr) {
+		LOG("Error: pbody is nullptr in Start");
+		return false;
+	}
+
 	//Assign collider type
 	pbody->ctype = ColliderType::ENEMY;
 
@@ -129,10 +134,15 @@ bool Enemy::Update(float dt)
 
 bool Enemy::CleanUp()
 {
+	Engine::GetInstance().textures.get()->UnLoad(texture);
 	return true;
 }
 
 void Enemy::SetPosition(Vector2D pos) {
+	if (pbody == nullptr) {
+		LOG("Error: pbody is nullptr in SetPosition");
+		return;
+	}
 	pos.setX(pos.getX() + texW / 2);
 	pos.setY(pos.getY() + texH / 2);
 	b2Vec2 bodyPos = b2Vec2(PIXEL_TO_METERS(pos.getX()), PIXEL_TO_METERS(pos.getY()));
