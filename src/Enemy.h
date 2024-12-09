@@ -32,6 +32,10 @@ public:
 
 	void ResetPath();
 
+	bool IsAlive() const { return alive; }
+
+	void SetAlive(bool isAlive) { alive = isAlive; }
+
 public:
 
 private:
@@ -44,4 +48,7 @@ private:
 	Animation idle;
 	PhysBody* pbody;
 	Pathfinding* pathfinding;
+
+	bool alive;
+	Vector2D position;
 };

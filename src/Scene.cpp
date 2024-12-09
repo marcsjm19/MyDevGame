@@ -171,6 +171,14 @@ bool Scene::Update(float dt)
         enemyList[0]->ResetPath();
     }
 
+    if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F3) == KEY_DOWN) {
+        Engine::GetInstance().map->CleanUp();
+        Engine::GetInstance().scene->CleanUp();
+		player->position = Vector2D(100, 100);
+        Engine::GetInstance().map->Load("Assets/Maps/", "Level1.tmx");
+        LOG("Loaded map1");
+    }
+
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F5) == KEY_DOWN) {
 		SaveState();
 	}
@@ -232,19 +240,31 @@ void Scene::LoadState() {
         sceneNode.child("entities").child("player").attribute("y").as_int());
     player->SetPosition(playerPos);
 
-    //enemies
-	if (enemyList.size() == 0) {
-		LOG("No enemies to load");
-		return;
-	}
-    else {
-        for (int i = 0; i < enemyList.size(); i++) {
-            Vector2D enemyPos = Vector2D(sceneNode.child("entities").child("enemies").child("enemy").attribute("x").as_int(),
-                sceneNode.child("entities").child("enemies").child("enemy").attribute("y").as_int() - 12);
-            enemyList[i]->SetPosition(enemyPos);
+    // Load enemies
+    pugi::xml_node enemiesNode = sceneNode.child("enemies");
+    for (pugi::xml_node enemyNode = enemiesNode.child("enemy"); enemyNode; enemyNode = enemyNode.next_sibling("enemy")) {
+        bool isAlive = enemyNode.attribute("alive").as_bool();
+        if (isAlive) {
+            Vector2D enemyPos = Vector2D(enemyNode.attribute("x").as_int(),
+                enemyNode.attribute("y").as_int());
+            // Find an existing enemy or create a new one if necessary
+            Enemy* enemy = FindOrCreateEnemy();
+            enemy->SetPosition(enemyPos);
+            enemy->SetAlive(true);
         }
     }
 
+}
+
+Enemy* Scene::FindOrCreateEnemy() {
+    for (auto enemy : enemyList) {
+        if (!enemy->IsAlive()) {
+            return enemy;
+        }
+    }
+    Enemy* enemy = (Enemy*)Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY);
+    enemyList.push_back(enemy);
+    return enemy;
 }
 
 // L15 TODO 2: Implement the Save function
@@ -267,21 +287,13 @@ void Scene::SaveState() {
     sceneNode.child("entities").child("player").attribute("x").set_value(player->GetPosition().getX() - 16);
     sceneNode.child("entities").child("player").attribute("y").set_value(player->GetPosition().getY() - 16);
 
-    //enemies
-    sceneNode.remove_child("enemies");
-    pugi::xml_node enemiesNode = sceneNode.append_child("enemies");
-
-    if (enemyList.size() == 0) {
-        LOG("No enemies to save");
-        return;
-    }
-    else
-    {
-        for (int i = 0; i < enemyList.size(); i++) {
-            pugi::xml_node enemyNode = enemiesNode.append_child("enemy");
-            enemyNode.attribute("x").set_value(enemyList[i]->GetPosition().getX());
-            enemyNode.attribute("y").set_value(enemyList[i]->GetPosition().getY());
-        }
+    // Save enemies
+    pugi::xml_node enemiesNode = sceneNode.child("enemies");
+    for (const auto& enemy : enemyList) {
+        pugi::xml_node enemyNode = enemiesNode.append_child("enemy");
+        enemyNode.append_attribute("x") = enemy->GetPosition().getX();
+        enemyNode.append_attribute("y") = enemy->GetPosition().getY();
+        enemyNode.append_attribute("alive") = enemy->IsAlive();
     }
 
     //Saves the modifications to the XML 
