@@ -116,3 +116,12 @@ bool EntityManager::Update(float dt)
 	}
 	return ret;
 }
+
+Player* EntityManager::GetPlayer() const {
+	for (Entity* entity : entities) {
+		if (entity->type == EntityType::PLAYER) {
+			return static_cast<Player*>(entity);
+		}
+	}
+	return nullptr;
+}

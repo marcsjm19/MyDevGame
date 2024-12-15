@@ -84,6 +84,12 @@ bool Scene::Update(float dt)
     // Get the player's position from the physics body
     Vector2D playerPos = player->position; // Already updated by the Player class
 
+	// Get the enemy's position from the physics body
+	//for (auto enemy : enemyList) {
+	//	enemy->Update(dt);
+    //    Vector2D enemyPos = enemy->GetPosition(); // Already updated by the Enemy class
+	//}
+
     // Get the screen size (width and height)
     int screenWidth, screenHeight;
     Engine::GetInstance().window->GetWindowSize(screenWidth, screenHeight);
@@ -171,10 +177,10 @@ bool Scene::Update(float dt)
     }
 
     //If mouse button is pressed modify enemy position
-    if (Engine::GetInstance().input.get()->GetMouseButtonDown(1) == KEY_DOWN) {
+    /*if (Engine::GetInstance().input.get()->GetMouseButtonDown(1) == KEY_DOWN) {
         enemyList[0]->SetPosition(Vector2D(highlightTile.getX(), highlightTile.getY()));
         enemyList[0]->ResetPath();
-    }
+    }*/
 
     if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F3) == KEY_DOWN) {
         Engine::GetInstance().map->CleanUp();
@@ -214,6 +220,11 @@ bool Scene::CleanUp()
 	LOG("Freeing scene");
 
 	SDL_DestroyTexture(img);
+	Engine::GetInstance().entityManager->DestroyEntity(player);
+	for (auto enemy : enemyList) {
+		Engine::GetInstance().entityManager->DestroyEntity(enemy);
+	}
+	enemyList.clear();
 
 	return true;
 }
@@ -249,16 +260,15 @@ void Scene::LoadState() {
     pugi::xml_node enemiesNode = sceneNode.child("entities").child("enemies");
     for (pugi::xml_node enemyNode = enemiesNode.child("enemy"); enemyNode; enemyNode = enemyNode.next_sibling("enemy")) {
         bool isAlive = enemyNode.attribute("alive").as_bool();
-		if (!isAlive) {
+	    if (isAlive) {
             Vector2D enemyPos = Vector2D(enemyNode.attribute("x").as_int(),
                 enemyNode.attribute("y").as_int());
             // Find an existing enemy or create a new one if necessary
             Enemy* enemy = FindOrCreateEnemy();
             enemy->SetAlive(isAlive);
             enemy->SetPosition(enemyPos);
-		}
-       
-
+	    }
+    
     }
     
 	int loadFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/load.wav");
@@ -298,12 +308,12 @@ void Scene::SaveState() {
 
     // Save enemies
     pugi::xml_node enemiesNode = sceneNode.child("entities").child("enemies");
-    //enemiesNode.remove_children();
+    enemiesNode.remove_children();
     for (const auto& enemy : enemyList) {
         pugi::xml_node enemyNode = enemiesNode.child("enemy");
-        enemyNode.attribute("x") = enemy->GetPosition().getX() - 16;
-        enemyNode.attribute("y") = enemy->GetPosition().getY() - 16;
-        enemyNode.attribute("alive") = enemy->IsAlive();
+		enemyNode.attribute("x").set_value(enemy->GetPosition().getX());
+		enemyNode.attribute("y").set_value(enemy->GetPosition().getY());
+        enemyNode.append_attribute("alive") = enemy->IsAlive();
     }
 
     //Saves the modifications to the XML 

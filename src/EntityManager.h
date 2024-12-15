@@ -3,6 +3,7 @@
 #include "Module.h"
 #include "Entity.h"
 #include <list>
+#include "Player.h"
 
 class EntityManager : public Module
 {
@@ -32,8 +33,9 @@ public:
 
 	void AddEntity(Entity* entity);
 
+	Player* GetPlayer() const;
+
 public:
 
 	std::list<Entity*> entities;
-
 };

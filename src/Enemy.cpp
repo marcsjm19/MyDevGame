@@ -9,6 +9,7 @@
 #include "Physics.h"
 #include "Map.h"
 #include "EntityManager.h"
+#include "Player.h"
 
 Enemy::Enemy() : Entity(EntityType::ENEMY)
 {
@@ -61,6 +62,8 @@ bool Enemy::Start() {
 	pathfinding = new Pathfinding();
 	ResetPath();
 
+	initialX = position.getX();
+
 	Engine::GetInstance().scene.get()->SaveState();
 
 	return true;
@@ -69,7 +72,7 @@ bool Enemy::Start() {
 bool Enemy::Update(float dt)
 {
 	// Pathfinding testing inputs
-	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_R) == KEY_DOWN) {
+	/*if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_R) == KEY_DOWN) {
 		Vector2D pos = GetPosition();
 		Vector2D tilePos = Engine::GetInstance().map.get()->WorldToMap(pos.getX(),pos.getY());
 		pathfinding->ResetPath(tilePos);
@@ -120,13 +123,45 @@ bool Enemy::Update(float dt)
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_M) == KEY_REPEAT &&
 		Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT) {
 		pathfinding->PropagateAStar(SQUARED);
+	}*/
+
+	if (pbody != nullptr) {
+		b2Vec2 pbodyPos = pbody->body->GetPosition();
+		position.setX(METERS_TO_PIXELS(pbodyPos.x) - texW / 2);
+		position.setY(METERS_TO_PIXELS(pbodyPos.y) - texH / 2);
+	}
+
+	Player* player = Engine::GetInstance().entityManager->GetPlayer();
+	if (player != nullptr && IsPlayerClose(player)) {
+		pathfinding->PropagateAStar(MANHATTAN);
+		Vector2D playerPos = player->GetPosition();
+		Vector2D direction = playerPos - position;
+		direction = direction.normalized();
+		patrolSpeed = 1.0f;
+		b2Vec2 velocity(direction.getX() * patrolSpeed, 0);
+		pbody->body->SetLinearVelocity(velocity);
+		if (!alertPlayed) {
+			int enemyalertFxId = Engine::GetInstance().audio.get()->LoadFx("Assets/Audio/Fx/enemyalert.wav");
+			Engine::GetInstance().audio.get()->PlayFx(enemyalertFxId, 0);
+			alertPlayed = true;
+		}
+	}
+	else {
+		Patrol();
+		alertPlayed = false;
 	}
 
 	// L08 TODO 4: Add a physics to an item - update the position of the object from the physics.  
-	b2Transform pbodyPos = pbody->body->GetTransform();
-	position.setX(METERS_TO_PIXELS(pbodyPos.p.x) - texW / 2);
-	position.setY(METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2);
+	
+	//position.setX(METERS_TO_PIXELS(pbodyPos.x) - texW / 2);
+	//position.setY(METERS_TO_PIXELS(pbodyPos.y) - texH / 2);
+    
+	//position.setX(METERS_TO_PIXELS(pbodyPos.p.x) - texW / 2);
+	//position.setY(METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2);
 
+	//position.getX();
+	//position.getY();
+	
 	Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX(), (int)position.getY(), &currentAnimation->GetCurrentFrame());
 	currentAnimation->Update();
 
@@ -170,11 +205,23 @@ void Enemy::ResetPath() {
 }
 
 void Enemy::OnCollision(PhysBody* physA, PhysBody* physB) {
+	// Get the world contact points (from Box2D contact data)
+	b2WorldManifold worldManifold;
+	physB->body->GetContactList()->contact->GetWorldManifold(&worldManifold);
+
+	// Get the normal of the collision (this tells the direction of the impact)
+	b2Vec2 normal = worldManifold.normal;
+
 	switch (physB->ctype)
 	{
 	case ColliderType::PLAYER:
 		LOG("Collided with player - DESTROY");
-		Engine::GetInstance().entityManager.get()->DestroyEntity(this);
+		if (normal.y >= 0.8) 
+		{
+			Engine::GetInstance().entityManager.get()->DestroyEntity(this);
+			int enemykilledFxId = Engine::GetInstance().audio.get()->LoadFx("Assets/Audio/Fx/enemykilled.wav");
+			Engine::GetInstance().audio.get()->PlayFx(enemykilledFxId);
+		}
 		break;
 	}
 }
@@ -187,4 +234,38 @@ void Enemy::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 		LOG("Collision player");
 		break;
 	}
+}
+
+bool Enemy::IsPlayerClose(Player* player) {
+	if (player == nullptr) {
+		return false;
+	}
+	Vector2D playerPos = player->GetPosition();
+	Vector2D enemyPos = GetPosition();
+	float distance = enemyPos.distanceEuclidean(playerPos);
+	return distance < METERS_TO_PIXELS(3.0f);
+}
+
+void Enemy::Patrol() {
+	if (pbody == nullptr) {
+		LOG("Error: pbody is nullptr in Patrol");
+		return;
+	}
+
+	b2Vec2 velocity = pbody->body->GetLinearVelocity();
+
+	if (movingRight) {
+		velocity.x = patrolSpeed;
+		if (position.getX() >= initialX + METERS_TO_PIXELS(patrolDistance)) {
+			movingRight = false;
+		}
+	}
+	else {
+		velocity.x = -patrolSpeed;
+		if (position.getX() <= initialX) {
+			movingRight = true;
+		}
+	}
+
+	pbody->body->SetLinearVelocity(velocity);
 }

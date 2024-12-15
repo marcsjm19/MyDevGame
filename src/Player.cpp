@@ -325,7 +325,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		break;
 	case ColliderType::ENEMY:
 		LOG("Collision ENEMY");
-		if (normal.y >= 0.8 || (currentAnimation == &shoot && (normal.x <= -0.8 || normal.x >= 0.8))) {  // Adjust this threshold if needed
+		if ((currentAnimation == &shoot && (normal.x <= -0.8 || normal.x >= 0.8))) {  // Adjust this threshold if needed
 			
 			Engine::GetInstance().physics.get()->DeletePhysBody(physB); // Deletes the body of the enemy from the physics world
 			pugi::xml_document doc;
@@ -336,6 +336,9 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 
 			int enemykilledFxId = Engine::GetInstance().audio.get()->LoadFx("Assets/Audio/Fx/enemykilled.wav");
 			Engine::GetInstance().audio.get()->PlayFx(enemykilledFxId);
+		}
+		else if (normal.y >= 0.8) { 
+			isDead = false;
 		}
 		else {
 			isDead = true;

@@ -4,6 +4,7 @@
 #include "SDL2/SDL.h"
 #include "Animation.h"
 #include "Pathfinding.h"
+#include "Player.h"
 
 struct SDL_Texture;
 
@@ -40,9 +41,12 @@ public:
 
 	void SetAlive(bool isAlive) { alive = isAlive; }
 
+	bool IsPlayerClose(Player* player);
+
 public:
 
 private:
+	void Patrol();
 
 	SDL_Texture* texture;
 	const char* texturePath;
@@ -55,4 +59,11 @@ private:
 
 	bool alive = true;
 	Vector2D position;
+	bool isPlayerFound = false;
+
+	float patrolSpeed = 0.6f;
+	float patrolDistance = 1.5f;
+	float initialX;
+	bool movingRight;
+	bool alertPlayed = false;
 };
