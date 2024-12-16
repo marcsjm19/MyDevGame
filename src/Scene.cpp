@@ -345,14 +345,14 @@ void Scene::SaveState() {
     pugi::xml_node enemiesNode = sceneNode.child("entities").child("enemies");
     enemiesNode.remove_children();
     for (const auto& enemy : enemyList) {
-        pugi::xml_node enemyNode; //= enemiesNode.child("enemy");
+        pugi::xml_node enemyNode = enemiesNode.child("enemy");
 		enemyNode.attribute("x").set_value(enemy->GetPosition().getX());
 		enemyNode.attribute("y").set_value(enemy->GetPosition().getY());
         enemyNode.append_attribute("alive") = enemy->IsAlive();
     }
 
     for (const auto& flyingenemy : flyingenemyList) {
-        pugi::xml_node flyingenemyNode; //= enemiesNode.child("flyingenem");
+        pugi::xml_node flyingenemyNode = enemiesNode.child("flyingenem");
         flyingenemyNode.attribute("x").set_value(flyingenemy->GetPosition().getX());
         flyingenemyNode.attribute("y").set_value(flyingenemy->GetPosition().getY());
         flyingenemyNode.append_attribute("alive") = flyingenemy->IsAlive();

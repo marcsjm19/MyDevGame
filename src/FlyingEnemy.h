@@ -68,4 +68,5 @@ private:
 	float initialY;
 	bool movingUp;
 	bool alertPlayed = false;
+	bool drawPath = true;
 };

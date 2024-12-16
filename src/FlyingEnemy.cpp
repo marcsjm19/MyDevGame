@@ -80,7 +80,11 @@ bool FlyingEnemy::Update(float dt)
 
 	Player* player = Engine::GetInstance().entityManager->GetPlayer();
 	if (player != nullptr && IsPlayerClose(player)) {
-		pathfinding->PropagateAStar(MANHATTAN);
+		ResetPath();
+		while (pathfinding->pathTiles.empty())
+		{
+			pathfinding->PropagateAStar(MANHATTAN);
+		}
 		Vector2D playerPos = player->GetPosition();
 		Vector2D direction = playerPos - position;
 		direction = direction.normalized();
@@ -96,6 +100,7 @@ bool FlyingEnemy::Update(float dt)
 	else {
 		Patrol();
 		alertPlayed = false;
+		ResetPath();
 	}
 
 	// L08 TODO 4: Add a physics to an item - update the position of the object from the physics.  
@@ -113,7 +118,16 @@ bool FlyingEnemy::Update(float dt)
 	currentAnimation->Update();
 
 	// Draw pathfinding 
-	//pathfinding->DrawPath();
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F9) == KEY_DOWN)
+	{
+		drawPath = !drawPath;
+
+	}
+
+	if (drawPath)
+	{
+		pathfinding->DrawPath();
+	}
 
 	return true;
 }

@@ -67,4 +67,5 @@ private:
 	float initialX;
 	bool movingRight;
 	bool alertPlayed = false;
+	bool drawPath = true;
 };
