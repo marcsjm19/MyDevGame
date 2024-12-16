@@ -165,7 +165,7 @@ void FlyingEnemy::OnCollision(PhysBody* physA, PhysBody* physB) {
 		LOG("Collided with player - DESTROY");
 		if (normal.y >= 0.8 || (player->isShooting && (normal.x <= -0.8 || normal.x >= 0.8)))
 		{
-			Engine::GetInstance().entityManager.get()->DestroyEntity(this);
+			//Engine::GetInstance().entityManager.get()->DestroyEntity(this);
 			int enemykilledFxId = Engine::GetInstance().audio.get()->LoadFx("Assets/Audio/Fx/enemykilled.wav");
 			Engine::GetInstance().audio.get()->PlayFx(enemykilledFxId);
 		}

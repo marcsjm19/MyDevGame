@@ -59,7 +59,7 @@ bool Scene::Awake()
         enemyList.push_back(enemy);
     }
 
-    for (pugi::xml_node flyingenemyNode = configParameters.child("entities").child("enemies").child("flyingenem"); flyingenemyNode; flyingenemyNode = flyingenemyNode.next_sibling("flyingenemy"))
+    for (pugi::xml_node flyingenemyNode = configParameters.child("entities").child("enemies").child("flyingenem"); flyingenemyNode; flyingenemyNode = flyingenemyNode.next_sibling("flyingenem"))
     {
         FlyingEnemy* flyingenemy = (FlyingEnemy*)Engine::GetInstance().entityManager->CreateEntity(EntityType::FLYINGENEMY);
         flyingenemy->SetParameters(flyingenemyNode);

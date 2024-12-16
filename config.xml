@@ -91,21 +91,51 @@
 						</idle>
 					</animations>
 				</enemy>
-        <flyingenem name="badguy2" x="480" y="288" w="32" h="32" texture="Assets/Textures/enemy/Idle.png" gravity="false" alive="true">
-          <animations>
-            <idle loop="true" speed ="0.5">
-              <frame x="0" y="0" w="32" h="32"/>
-              <frame x="32" y="0" w="32" h="32"/>
-              <frame x="64" y="0" w="32" h="32"/>
-              <frame x="96" y="0" w="32" h="32"/>
-              <frame x="128" y="0" w="32" h="32"/>
-              <frame x="160" y="0" w="32" h="32"/>
-              <frame x="192" y="0" w="32" h="32"/>
-              <frame x="224" y="0" w="32" h="32"/>
-              <frame x="256" y="0" w="32" h="32"/>
-            </idle>
-          </animations>
-        </flyingenem>
+				<enemy name="badguy" x="1100" y="288" w="32" h="32" texture="Assets/Textures/enemy/Idle.png" gravity="true" alive="true">
+					<animations>
+						<idle loop="true" speed ="0.5">
+							<frame x="0" y="0" w="32" h="32"/>
+							<frame x="32" y="0" w="32" h="32"/>
+							<frame x="64" y="0" w="32" h="32"/>
+							<frame x="96" y="0" w="32" h="32"/>
+							<frame x="128" y="0" w="32" h="32"/>
+							<frame x="160" y="0" w="32" h="32"/>
+							<frame x="192" y="0" w="32" h="32"/>
+							<frame x="224" y="0" w="32" h="32"/>
+							<frame x="256" y="0" w="32" h="32"/>
+						</idle>
+					</animations>
+				</enemy>
+				<flyingenem name="badguy2" x="480" y="288" w="32" h="32" texture="Assets/Textures/enemy/Idle.png" gravity="false" alive="true">
+					<animations>
+						 <idle loop="true" speed ="0.5">
+							<frame x="0" y="0" w="32" h="32"/>
+							<frame x="32" y="0" w="32" h="32"/>
+							<frame x="64" y="0" w="32" h="32"/>
+							<frame x="96" y="0" w="32" h="32"/>
+							<frame x="128" y="0" w="32" h="32"/>
+							<frame x="160" y="0" w="32" h="32"/>
+							<frame x="192" y="0" w="32" h="32"/>
+							<frame x="224" y="0" w="32" h="32"/>
+							<frame x="256" y="0" w="32" h="32"/>
+						</idle>
+					</animations>
+				</flyingenem>
+				<flyingenem name="badguy2" x="780" y="256" w="32" h="32" texture="Assets/Textures/enemy/Idle.png" gravity="false" alive="true">
+					<animations>
+						<idle loop="true" speed ="0.5">
+							<frame x="0" y="0" w="32" h="32"/>
+							<frame x="32" y="0" w="32" h="32"/>
+							<frame x="64" y="0" w="32" h="32"/>
+							<frame x="96" y="0" w="32" h="32"/>
+							<frame x="128" y="0" w="32" h="32"/>
+							<frame x="160" y="0" w="32" h="32"/>
+							<frame x="192" y="0" w="32" h="32"/>
+							<frame x="224" y="0" w="32" h="32"/>
+							<frame x="256" y="0" w="32" h="32"/>
+						</idle>
+					</animations>
+				</flyingenem>
 			</enemies>
 		</entities>
 	</scene>
