@@ -60,6 +60,7 @@ private:
 	bool alive = true;
 	Vector2D position;
 	bool isPlayerFound = false;
+	Player* player;
 
 	float patrolSpeed = 1.2f;
 	float patrolDistance = 2.5f;

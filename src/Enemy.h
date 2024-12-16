@@ -56,6 +56,7 @@ private:
 	Animation idle;
 	PhysBody* pbody;
 	Pathfinding* pathfinding;
+	Player* player;
 
 	bool alive = true;
 	Vector2D position;
