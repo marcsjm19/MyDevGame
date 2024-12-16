@@ -12,6 +12,7 @@
 #include "Map.h"
 #include "Item.h"
 #include "Enemy.h"
+#include "FlyingEnemy.h"
 #include "Physics.h"
 
 Scene::Scene() : Module()
@@ -56,6 +57,13 @@ bool Scene::Awake()
         Enemy* enemy = (Enemy*)Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY);
         enemy->SetParameters(enemyNode);
         enemyList.push_back(enemy);
+    }
+
+    for (pugi::xml_node flyingenemyNode = configParameters.child("entities").child("enemies").child("flyingenem"); flyingenemyNode; flyingenemyNode = flyingenemyNode.next_sibling("flyingenemy"))
+    {
+        FlyingEnemy* flyingenemy = (FlyingEnemy*)Engine::GetInstance().entityManager->CreateEntity(EntityType::FLYINGENEMY);
+        flyingenemy->SetParameters(flyingenemyNode);
+        flyingenemyList.push_back(flyingenemy);
     }
 	return ret;
 }
@@ -224,6 +232,9 @@ bool Scene::CleanUp()
 	for (auto enemy : enemyList) {
 		Engine::GetInstance().entityManager->DestroyEntity(enemy);
 	}
+	for (auto flyingenemy : flyingenemyList) {
+		Engine::GetInstance().entityManager->DestroyEntity(flyingenemy);
+	}
 	enemyList.clear();
 
 	return true;
@@ -257,7 +268,7 @@ void Scene::LoadState() {
     player->SetPosition(playerPos);
 
     // Load enemies
-    pugi::xml_node enemiesNode = sceneNode.child("entities").child("enemies");
+    pugi::xml_node enemiesNode = sceneNode.child("entities");
     for (pugi::xml_node enemyNode = enemiesNode.child("enemy"); enemyNode; enemyNode = enemyNode.next_sibling("enemy")) {
         bool isAlive = enemyNode.attribute("alive").as_bool();
 	    if (isAlive) {
@@ -269,6 +280,19 @@ void Scene::LoadState() {
             enemy->SetPosition(enemyPos);
 	    }
     
+    }
+
+    for (pugi::xml_node flyingenemyNode = enemiesNode.child("flyingenem"); flyingenemyNode; flyingenemyNode = flyingenemyNode.next_sibling("flyingenem")) {
+        bool isAlive = flyingenemyNode.attribute("alive").as_bool();
+        if (isAlive) {
+            Vector2D flyingenemyPos = Vector2D(flyingenemyNode.attribute("x").as_int(),
+                flyingenemyNode.attribute("y").as_int());
+            // Find an existing enemy or create a new one if necessary
+            FlyingEnemy* flyingenemy = FindOrCreateFlyingEnemy();
+            flyingenemy->SetAlive(isAlive);
+            flyingenemy->SetPosition(flyingenemyPos);
+        }
+
     }
     
 	int loadFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/load.wav");
@@ -284,6 +308,17 @@ Enemy* Scene::FindOrCreateEnemy() {
     Enemy* enemy = (Enemy*)Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY);
     enemyList.push_back(enemy);
     return enemy;
+}
+
+FlyingEnemy* Scene::FindOrCreateFlyingEnemy() {
+    for (auto flyingenemy : flyingenemyList) {
+        if (!flyingenemy->IsAlive()) {
+            return flyingenemy;
+        }
+    }
+    FlyingEnemy* flyingenemy = (FlyingEnemy*)Engine::GetInstance().entityManager->CreateEntity(EntityType::FLYINGENEMY);
+    flyingenemyList.push_back(flyingenemy);
+    return flyingenemy;
 }
 
 // L15 TODO 2: Implement the Save function
@@ -310,10 +345,17 @@ void Scene::SaveState() {
     pugi::xml_node enemiesNode = sceneNode.child("entities").child("enemies");
     enemiesNode.remove_children();
     for (const auto& enemy : enemyList) {
-        pugi::xml_node enemyNode = enemiesNode.child("enemy");
+        pugi::xml_node enemyNode; //= enemiesNode.child("enemy");
 		enemyNode.attribute("x").set_value(enemy->GetPosition().getX());
 		enemyNode.attribute("y").set_value(enemy->GetPosition().getY());
         enemyNode.append_attribute("alive") = enemy->IsAlive();
+    }
+
+    for (const auto& flyingenemy : flyingenemyList) {
+        pugi::xml_node flyingenemyNode; //= enemiesNode.child("flyingenem");
+        flyingenemyNode.attribute("x").set_value(flyingenemy->GetPosition().getX());
+        flyingenemyNode.attribute("y").set_value(flyingenemy->GetPosition().getY());
+        flyingenemyNode.append_attribute("alive") = flyingenemy->IsAlive();
     }
 
     //Saves the modifications to the XML 

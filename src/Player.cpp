@@ -10,6 +10,7 @@
 #include "EntityManager.h"
 #include "Map.h"
 #include "Enemy.h"
+#include "FlyingEnemy.h"
 
 Player::Player() : Entity(EntityType::PLAYER)
 {
@@ -325,7 +326,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		break;
 	case ColliderType::ENEMY:
 		LOG("Collision ENEMY");
-		if ((currentAnimation == &shoot && (normal.x <= -0.8 || normal.x >= 0.8))) {  // Adjust this threshold if needed
+		if (normal.y >= 0.8 || (currentAnimation == &shoot && (normal.x <= -0.8 || normal.x >= 0.8))) {  // Adjust this threshold if needed
 			
 			Engine::GetInstance().physics.get()->DeletePhysBody(physB); // Deletes the body of the enemy from the physics world
 			pugi::xml_document doc;
@@ -338,6 +339,30 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 			Engine::GetInstance().audio.get()->PlayFx(enemykilledFxId);
 		}
 		else if (normal.y >= 0.8) { 
+			isDead = false;
+		}
+		else {
+			isDead = true;
+			currentAnimation = &die;
+			die.Reset();
+			deathTime = SDL_GetTicks();
+		}
+		break;
+	case ColliderType::FLYINGENEMY:
+		LOG("Collision FLYINGENEMY");
+		if (normal.y >= 0.8 || (currentAnimation == &shoot && (normal.x <= -0.8 || normal.x >= 0.8))) {  // Adjust this threshold if needed
+
+			Engine::GetInstance().physics.get()->DeletePhysBody(physB); // Deletes the body of the enemy from the physics world
+			pugi::xml_document doc;
+			pugi::xml_parse_result result = doc.load_file("saveload.xml");
+			pugi::xml_node flyingenemyNode = doc.child("config").child("scene").child("entities").child("enemies").child("flyingenem");
+			flyingenemyNode.attribute("alive").set_value("false");
+			flyingenemyNode.remove_child("enemy");
+
+			int enemykilledFxId = Engine::GetInstance().audio.get()->LoadFx("Assets/Audio/Fx/enemykilled.wav");
+			Engine::GetInstance().audio.get()->PlayFx(enemykilledFxId);
+		}
+		else if (normal.y >= 0.8) {
 			isDead = false;
 		}
 		else {

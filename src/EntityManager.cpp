@@ -1,6 +1,7 @@
 #include "EntityManager.h"
 #include "Player.h"
 #include "Enemy.h"
+#include "FlyingEnemy.h"
 #include "Engine.h"
 #include "Textures.h"
 #include "Scene.h"
@@ -78,6 +79,9 @@ Entity* EntityManager::CreateEntity(EntityType type)
 		break;
 	case EntityType::ENEMY:
 		entity = new Enemy();
+		break;
+	case EntityType::FLYINGENEMY:
+		entity = new FlyingEnemy();
 		break;
 	default:
 		break;

@@ -3,6 +3,7 @@
 #include "Module.h"
 #include "Player.h"
 #include "Enemy.h"
+#include "FlyingEnemy.h"
 
 struct SDL_Texture;
 
@@ -50,5 +51,7 @@ private:
 	//L03: TODO 3b: Declare a Player attribute
 	Player* player;
 	std::vector<Enemy*> enemyList;
+	std::vector<FlyingEnemy*> flyingenemyList;
 	Enemy* FindOrCreateEnemy();
+	FlyingEnemy* FindOrCreateFlyingEnemy();
 };
