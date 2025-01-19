@@ -14,10 +14,13 @@
 		<resizable value="false" />
 		<fullscreen_window value="false" />
 	</window>
+	<menus>
+		<mainmenu x="0" y="0" w="720" h="480" texture="Assets/Textures/main_menu.png" />
+	</menus>
 	<scene>
 		<map path="Assets/Maps/" name="Level1.tmx" />
 		<entities>
-			<player x="84" y="303" w="32" h="32" texture="Assets/Textures/player.png">
+			<player x="953" y="1382" w="32" h="32" texture="Assets/Textures/player.png">
 				<animations>
 					<idle loop="true" speed="0.1">
 						<frame x="0" y="0" w="32" h="32" />

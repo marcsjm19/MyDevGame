@@ -97,6 +97,10 @@ PhysBody* Physics::CreateRectangle(int x, int y, int width, int height, bodyType
 
 PhysBody* Physics::CreateCircle(int x, int y, int radious, bodyType type)
 {
+	if (world == nullptr) {
+		LOG("Error: Physics world is not initialized");
+		return nullptr;
+	}
 	// Create BODY at position x,y
 	b2BodyDef body;
 
@@ -108,6 +112,10 @@ PhysBody* Physics::CreateCircle(int x, int y, int radious, bodyType type)
 
 	// Add BODY to the world
 	b2Body* b = world->CreateBody(&body);
+	if (b == nullptr) {
+		LOG("Error: Failed to create body");
+		return nullptr;
+	}
 
 	// Create SHAPE
 	b2CircleShape circle;
@@ -128,6 +136,8 @@ PhysBody* Physics::CreateCircle(int x, int y, int radious, bodyType type)
 	b->GetUserData().pointer = (uintptr_t)pbody;
 	pbody->width = radious * 0.5f;
 	pbody->height = radious * 0.5f;
+
+	LOG("Circle created successfully");
 
 	// Return our PhysBody class
 	return pbody;

@@ -8,12 +8,12 @@
 
 struct SDL_Texture;
 
-class FlyingEnemy : public Entity
+class Boss : public Entity
 {
 public:
 
-	FlyingEnemy();
-	virtual ~FlyingEnemy();
+	Boss();
+	virtual ~Boss();
 
 	bool Awake();
 
@@ -54,20 +54,18 @@ private:
 	pugi::xml_node parameters;
 	Animation* currentAnimation = nullptr;
 	Animation idle;
-	Animation attack;
 	PhysBody* pbody;
 	Pathfinding* pathfinding;
+	Player* player;
 
 	bool alive = true;
 	Vector2D position;
 	bool isPlayerFound = false;
-	Player* player;
 
-	float patrolSpeed = 1.2f;
-	float patrolDistance = 2.5f;
+	float patrolSpeed = 0.6f;
+	float patrolDistance = 1.5f;
 	float initialX;
-	float initialY;
-	bool movingUp;
+	bool movingRight;
 	bool alertPlayed = false;
 	bool drawPath = true;
 };

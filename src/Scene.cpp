@@ -13,7 +13,10 @@
 #include "Item.h"
 #include "Enemy.h"
 #include "FlyingEnemy.h"
+#include "Boss.h"
 #include "Physics.h"
+#include "GuiControl.h"
+#include "GuiManager.h"
 
 Scene::Scene() : Module()
 {
@@ -36,7 +39,7 @@ bool Scene::Awake()
 	player->SetParameters(configParameters.child("entities").child("player"));
 	
 	//L08 Create a new item using the entity manager and set the position to (200, 672) to test
-	/*Item* item1 = (Item*) Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM);
+	Item* item1 = (Item*) Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM);
 	item1->position = Vector2D(768, 992);
 
     Item* item2 = (Item*)Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM);
@@ -49,7 +52,7 @@ bool Scene::Awake()
 	item4->position = Vector2D(2976, 160);
 
 	Item* item5 = (Item*)Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM);
-	item5->position = Vector2D(3008, 160);*/
+	item5->position = Vector2D(3008, 160);
 
     // Create a enemy using the entity manager 
     for (pugi::xml_node enemyNode = configParameters.child("entities").child("enemies").child("enemy"); enemyNode; enemyNode = enemyNode.next_sibling("enemy"))
@@ -65,6 +68,14 @@ bool Scene::Awake()
         flyingenemy->SetParameters(flyingenemyNode);
         flyingenemyList.push_back(flyingenemy);
     }
+
+	Boss* boss = (Boss*)Engine::GetInstance().entityManager->CreateEntity(EntityType::BOSS);
+	boss->SetParameters(configParameters.child("entities").child("enemies").child("boss"));
+
+    // L16: TODO 2: Instantiate a new GuiControlButton in the Scene
+    SDL_Rect btPos = { 520, 350, 120,20 };
+    guiBt = (GuiControlButton*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::BUTTON, 1, "MyButton", btPos, this);
+
 	return ret;
 }
 
@@ -236,6 +247,8 @@ bool Scene::CleanUp()
 		Engine::GetInstance().entityManager->DestroyEntity(flyingenemy);
 	}
 	enemyList.clear();
+	flyingenemyList.clear();
+	Engine::GetInstance().entityManager->DestroyEntity(boss);
 
 	return true;
 }
@@ -294,6 +307,10 @@ void Scene::LoadState() {
         }
 
     }
+
+	//Vector2D bossPos = Vector2D(sceneNode.child("entities").child("enemies").child("boss").attribute("x").as_int(),
+	//	sceneNode.child("entities").child("enemies").child("boss").attribute("y").as_int());
+	//boss->SetPosition(bossPos);
     
 	int loadFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/load.wav");
 	Engine::GetInstance().audio->PlayFx(loadFx);
@@ -358,9 +375,19 @@ void Scene::SaveState() {
         flyingenemyNode.append_attribute("alive") = flyingenemy->IsAlive();
     }
 
+	//sceneNode.append_child("entities").append_child("enemies").append_child("boss").append_attribute("x").set_value(boss->GetPosition().getX());
+	//sceneNode.append_child("entities").append_child("enemies").append_child("boss").append_attribute("y").set_value(boss->GetPosition().getY());
+
     //Saves the modifications to the XML 
     saveFile.save_file("saveload.xml");
 
 	int saveFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/save.wav");
 	Engine::GetInstance().audio->PlayFx(saveFx);
+}
+
+bool Scene::OnGuiMouseClickEvent(GuiControl* control)
+{
+    // L15: DONE 5: Implement the OnGuiMouseClickEvent method
+    LOG("Press Gui Control: %d", control->id);
+    return true;
 }

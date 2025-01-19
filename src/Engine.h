@@ -15,9 +15,11 @@ class Textures;
 class Audio;
 class Scene;
 class EntityManager;
+class GuiManager;
 class Map;
 //L08 TODO 2: Add Physics module
 class Physics;
+class MainMenu;
 
 class Engine
 {
@@ -100,6 +102,8 @@ public:
 	std::shared_ptr<Map> map;
 	// L08: TODO 2: Add Physics module
 	std::shared_ptr<Physics> physics;
+	std::shared_ptr<GuiManager> guiManager;
+	std::shared_ptr<MainMenu> mainMenu;
 
 
 private: 

@@ -28,6 +28,7 @@ enum class ColliderType {
 	ITEM,
 	ENEMY,
 	FLYINGENEMY,
+	BOSS,
 	PLATFORM,
 	WALL,
 	SPIKES,

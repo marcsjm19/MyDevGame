@@ -84,6 +84,7 @@ bool Player::Update(float dt)
 		}
 		else {
 			// Return to dynamic body when disabling godMode
+			pbody->body->SetTransform(b2Vec2(PIXEL_TO_METERS(position.getX()), PIXEL_TO_METERS(position.getY())), 0);
 			pbody->body->SetType(b2_dynamicBody);
 			LOG("God Mode Disabled");
 		}
@@ -372,15 +373,39 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 			deathTime = SDL_GetTicks();
 		}
 		break;
+	case ColliderType::BOSS:
+		LOG("Collision BOSS");
+		if (normal.y >= 0.8 || (currentAnimation == &shoot && (normal.x <= -0.8 || normal.x >= 0.8))) {  // Adjust this threshold if needed
+
+			Engine::GetInstance().physics.get()->DeletePhysBody(physB); // Deletes the body of the enemy from the physics world
+			pugi::xml_document doc;
+			pugi::xml_parse_result result = doc.load_file("saveload.xml");
+			pugi::xml_node bossNode = doc.child("config").child("scene").child("entities").child("enemies").child("boss");
+			bossNode.attribute("alive").set_value("false");
+			bossNode.remove_child("enemy");
+
+			int enemykilledFxId = Engine::GetInstance().audio.get()->LoadFx("Assets/Audio/Fx/enemykilled.wav");
+			Engine::GetInstance().audio.get()->PlayFx(enemykilledFxId);
+		}
+		else if (normal.y >= 0.8) {
+			isDead = false;
+		}
+		else {
+			isDead = true;
+			currentAnimation = &die;
+			die.Reset();
+			deathTime = SDL_GetTicks();
+		}
+		break;
 	/*case ColliderType::SPIKES:
 		LOG("Collision SPIKES");
 		isDead = true;
 		break;*/
-	//case ColliderType::ITEM:
-	//	LOG("Collision ITEM");
-	//	Engine::GetInstance().audio.get()->PlayFx(pickCoinFxId);
-	//	Engine::GetInstance().physics.get()->DeletePhysBody(physB); // Deletes the body of the item from the physics world
-	//	break;
+	case ColliderType::ITEM:
+		LOG("Collision ITEM");
+		Engine::GetInstance().audio.get()->PlayFx(pickCoinFxId);
+		Engine::GetInstance().physics.get()->DeletePhysBody(physB); // Deletes the body of the item from the physics world
+		break;
 	case ColliderType::UNKNOWN:
 		LOG("Collision UNKNOWN");
 		break;

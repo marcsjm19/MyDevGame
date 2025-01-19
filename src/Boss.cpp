@@ -1,4 +1,4 @@
-#include "FlyingEnemy.h"
+#include "Boss.h"
 #include "Engine.h"
 #include "Textures.h"
 #include "Audio.h"
@@ -11,23 +11,23 @@
 #include "EntityManager.h"
 #include "Player.h"
 
-FlyingEnemy::FlyingEnemy() : Entity(EntityType::FLYINGENEMY)
+Boss::Boss() : Entity(EntityType::BOSS)
 {
 
 }
 
-FlyingEnemy::~FlyingEnemy() {
+Boss::~Boss() {
 	CleanUp();
 	delete pathfinding;
 }
 
-bool FlyingEnemy::Awake() {
+bool Boss::Awake() {
 	return true;
 }
 
-bool FlyingEnemy::Start() {
-	player = (Player*)Engine::GetInstance().entityManager->CreateEntity(EntityType::PLAYER);
+bool Boss::Start() {
 
+	player = (Player*)Engine::GetInstance().entityManager->CreateEntity(EntityType::PLAYER);
 	//initilize textures
 	texture = Engine::GetInstance().textures.get()->Load(parameters.attribute("texture").as_string());
 	position.setX(parameters.attribute("x").as_int());
@@ -37,9 +37,8 @@ bool FlyingEnemy::Start() {
 
 	//Load animations
 	idle.LoadAnimations(parameters.child("animations").child("idle"));
-	attack.LoadAnimations(parameters.child("animations").child("attack"));
 	currentAnimation = &idle;
-
+	
 	//Add a physics to an item - initialize the physics body
 	pbody = Engine::GetInstance().physics.get()->CreateCircle((int)position.getX() + texH / 2, (int)position.getY() + texH / 2, texH / 2, bodyType::DYNAMIC);
 
@@ -49,10 +48,11 @@ bool FlyingEnemy::Start() {
 	}
 
 	//Assign collider type
-	pbody->ctype = ColliderType::FLYINGENEMY;
+	pbody->ctype = ColliderType::BOSS;
 
 	pbody->listener = this;
 
+	// Set the gravity of the body
 	if (!parameters.attribute("gravity").as_bool()) pbody->body->SetGravityScale(0);
 
 	if (!parameters.attribute("alive").as_bool()) {
@@ -64,15 +64,15 @@ bool FlyingEnemy::Start() {
 	ResetPath();
 
 	initialX = position.getX();
-	initialY = position.getY();
 
 	Engine::GetInstance().scene.get()->SaveState();
 
 	return true;
 }
 
-bool FlyingEnemy::Update(float dt)
+bool Boss::Update(float dt)
 {
+
 	if (pbody != nullptr) {
 		b2Vec2 pbodyPos = pbody->body->GetPosition();
 		position.setX(METERS_TO_PIXELS(pbodyPos.x) - texW / 2);
@@ -86,36 +86,26 @@ bool FlyingEnemy::Update(float dt)
 		{
 			pathfinding->PropagateAStar(MANHATTAN);
 		}
+		
 		Vector2D playerPos = player->GetPosition();
 		Vector2D direction = playerPos - position;
 		direction = direction.normalized();
-		patrolSpeed = 1.8f;
-		b2Vec2 velocity(direction.getX() * patrolSpeed, direction.getY() * patrolSpeed);
+		patrolSpeed = 1.5f;
+		b2Vec2 velocity(direction.getX() * patrolSpeed, -GRAVITY_Y);
 		pbody->body->SetLinearVelocity(velocity);
-		currentAnimation = &attack;
 		if (!alertPlayed) {
 			int enemyalertFxId = Engine::GetInstance().audio.get()->LoadFx("Assets/Audio/Fx/enemyalert.wav");
 			Engine::GetInstance().audio.get()->PlayFx(enemyalertFxId, 0);
 			alertPlayed = true;
 		}
-
-		if (velocity.x >= 0)
-		{
-			Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX(), (int)position.getY(), &currentAnimation->GetCurrentFrame());
-		}
-		else
-		{
-			Engine::GetInstance().render.get()->DrawTextureFlip(texture, (int)position.getX(), (int)position.getY(), &currentAnimation->GetCurrentFrame());
-		}
 	}
 	else {
 		Patrol();
-		currentAnimation = &idle;
-		Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX(), (int)position.getY(), &currentAnimation->GetCurrentFrame());
 		alertPlayed = false;
 		ResetPath();
 	}
-
+	
+	Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX(), (int)position.getY(), &currentAnimation->GetCurrentFrame());
 	currentAnimation->Update();
 
 	// Draw pathfinding 
@@ -133,13 +123,13 @@ bool FlyingEnemy::Update(float dt)
 	return true;
 }
 
-bool FlyingEnemy::CleanUp()
+bool Boss::CleanUp()
 {
 	Engine::GetInstance().physics.get()->DeletePhysBody(pbody);
 	return true;
 }
 
-void FlyingEnemy::SetPosition(Vector2D pos) {
+void Boss::SetPosition(Vector2D pos) {
 	if (pbody == nullptr) {
 		LOG("Error: pbody is nullptr in SetPosition");
 		return;
@@ -150,7 +140,7 @@ void FlyingEnemy::SetPosition(Vector2D pos) {
 	pbody->body->SetTransform(bodyPos, 0);
 }
 
-Vector2D FlyingEnemy::GetPosition() {
+Vector2D Boss::GetPosition() {
 	if (pbody == nullptr) {
 		// Handle the error, maybe log it or throw an exception
 		return Vector2D(); // Return a default or error value
@@ -160,13 +150,13 @@ Vector2D FlyingEnemy::GetPosition() {
 	return pos;
 }
 
-void FlyingEnemy::ResetPath() {
+void Boss::ResetPath() {
 	Vector2D pos = GetPosition();
 	Vector2D tilePos = Engine::GetInstance().map.get()->WorldToMap(pos.getX(), pos.getY());
 	pathfinding->ResetPath(tilePos);
 }
 
-void FlyingEnemy::OnCollision(PhysBody* physA, PhysBody* physB) {
+void Boss::OnCollision(PhysBody* physA, PhysBody* physB) {
 	// Get the world contact points (from Box2D contact data)
 	b2WorldManifold worldManifold;
 	physB->body->GetContactList()->contact->GetWorldManifold(&worldManifold);
@@ -178,7 +168,7 @@ void FlyingEnemy::OnCollision(PhysBody* physA, PhysBody* physB) {
 	{
 	case ColliderType::PLAYER:
 		LOG("Collided with player - DESTROY");
-		if (normal.y >= 0.8 || (player->isShooting && (normal.x <= -0.8 || normal.x >= 0.8)))
+        if (normal.y >= 0.8 || (player->isShooting && (normal.x <= -0.8 || normal.x >= 0.8)))
 		{
 			//Engine::GetInstance().entityManager.get()->DestroyEntity(this);
 			int enemykilledFxId = Engine::GetInstance().audio.get()->LoadFx("Assets/Audio/Fx/enemykilled.wav");
@@ -188,7 +178,7 @@ void FlyingEnemy::OnCollision(PhysBody* physA, PhysBody* physB) {
 	}
 }
 
-void FlyingEnemy::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
+void Boss::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 {
 	switch (physB->ctype)
 	{
@@ -198,34 +188,34 @@ void FlyingEnemy::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 	}
 }
 
-bool FlyingEnemy::IsPlayerClose(Player* player) {
+bool Boss::IsPlayerClose(Player* player) {
 	if (player == nullptr) {
 		return false;
 	}
 	Vector2D playerPos = player->GetPosition();
-	Vector2D enemyPos = GetPosition();
-	float distance = enemyPos.distanceEuclidean(playerPos);
-	return distance < METERS_TO_PIXELS(5.0f);
+	Vector2D bossPos = GetPosition();
+	float distance = bossPos.distanceEuclidean(playerPos);
+	return distance < METERS_TO_PIXELS(3.0f);
 }
 
-void FlyingEnemy::Patrol() {
+void Boss::Patrol() {
 	if (pbody == nullptr) {
 		LOG("Error: pbody is nullptr in Patrol");
 		return;
 	}
 
-	b2Vec2 velocity(0, 0);// = pbody->body->GetLinearVelocity();
+	b2Vec2 velocity = pbody->body->GetLinearVelocity();
 
-	if (movingUp) {
-		velocity.y = patrolSpeed;
-		if (position.getY() >= initialY + METERS_TO_PIXELS(patrolDistance)) {
-			movingUp = false;
+	if (movingRight) {
+		velocity.x = patrolSpeed;
+		if (position.getX() >= initialX + METERS_TO_PIXELS(patrolDistance)) {
+			movingRight = false;
 		}
 	}
 	else {
-		velocity.y = -patrolSpeed;
-		if (position.getY() <= initialY) {
-			movingUp = true;
+		velocity.x = -patrolSpeed;
+		if (position.getX() <= initialX) {
+			movingRight = true;
 		}
 	}
 
