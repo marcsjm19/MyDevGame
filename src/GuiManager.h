@@ -21,6 +21,8 @@ public:
 	 // Called each loop iteration
 	 bool Update(float dt);
 
+	 bool IsValid(GuiControl* control);
+
 	// Called before quitting
 	bool CleanUp();
 

@@ -40,13 +40,21 @@ GuiControl* GuiManager::CreateGuiControl(GuiControlType type, int id, const char
 }
 
 bool GuiManager::Update(float dt)
-{	
+{
 	for (const auto& control : guiControlsList)
 	{
-		control->Update(dt);
+		if (control != nullptr && IsValid(control)) // Check if control is not null and valid
+		{
+			control->Update(dt);
+		}
 	}
-
 	return true;
+}
+
+bool GuiManager::IsValid(GuiControl* control)
+{
+	// Implement validation logic for control
+	return control != nullptr && control->id != -572662307; // Example condition
 }
 
 bool GuiManager::CleanUp()

@@ -14,6 +14,7 @@
 #include "Map.h"
 #include "Physics.h"
 #include "GuiManager.h"
+#include "MainMenu.h"
 
 // Constructor
 Engine::Engine() {
@@ -41,6 +42,7 @@ Engine::Engine() {
     map = std::make_shared<Map>();
     entityManager = std::make_shared<EntityManager>();
     guiManager = std::make_shared<GuiManager>();
+	mainMenu = std::make_shared<MainMenu>();
 
     // Ordered for awake / Start / Update
     // Reverse order of CleanUp
@@ -54,6 +56,7 @@ Engine::Engine() {
     AddModule(std::static_pointer_cast<Module>(scene));
     AddModule(std::static_pointer_cast<Module>(entityManager));
     AddModule(std::static_pointer_cast<Module>(guiManager));
+	AddModule(std::static_pointer_cast<Module>(mainMenu));
 
 
     // Render last 
@@ -145,7 +148,54 @@ bool Engine::Update() {
         ret = PostUpdate();
 
     FinishUpdate();
+
     return ret;
+
+    //switch (currentState) {
+    //    case GameState::MAIN_MENU:
+    //        if (mainMenu->Update(0.0f)) {
+    //            if (mainMenu->IsPlayButtonClicked()) {
+    //                mainMenu->PostUpdate();
+	//				mainMenu->CleanUp();
+    //                ChangeState(GameState::SCENE);
+    //
+    //            } else if (mainMenu->IsExitButtonClicked()) {
+    //                ChangeState(GameState::EXIT);
+    //            }
+    //        }
+    //        break;
+    //    case GameState::SCENE:
+    //        if (scene) {
+    //            scene->Update(0.0f);
+	//			map->Update(0.0f);
+	//			entityManager->Update(0.0f);
+    //        }
+    //        break;
+    //    case GameState::EXIT:
+    //        return false;
+    //}
+    return true;
+}
+
+void Engine::ChangeState(GameState newState) {
+	currentState = newState;
+    //switch (newState) {
+    //case GameState::MAIN_MENU:
+    //    // Inicializar MainMenu si es necesario
+	//	if (!mainMenu) {
+	//		//mainMenu = std::make_shared<MainMenu>();
+	//		//AddModule(std::static_pointer_cast<Module>(mainMenu));
+	//	}
+    //    break;
+    //case GameState::SCENE:
+	//	mainMenu->CleanUp();
+    //    if (!scene) {
+    //    }
+    //    break;
+    //case GameState::EXIT:
+    //    // Manejar la salida del juego
+    //    break;
+    //}
 }
 
 // Called before quitting

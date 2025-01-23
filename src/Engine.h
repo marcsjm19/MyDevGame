@@ -21,6 +21,12 @@ class Map;
 class Physics;
 class MainMenu;
 
+enum class GameState {
+	MAIN_MENU,
+	SCENE,
+	EXIT
+};
+
 class Engine
 {
 public:
@@ -46,6 +52,10 @@ public:
 	float GetDt() const {
 		return dt;
 	}
+
+	void ChangeState(GameState newState);
+
+	GameState currentState;
 
 private:
 

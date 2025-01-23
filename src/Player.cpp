@@ -11,6 +11,8 @@
 #include "Map.h"
 #include "Enemy.h"
 #include "FlyingEnemy.h"
+#include "Boss.h"
+#include "Item.h"
 
 Player::Player() : Entity(EntityType::PLAYER)
 {
@@ -266,12 +268,13 @@ bool Player::Update(float dt)
 		}
 	}
 
-	// Apply the velocity to the player
-	pbody->body->SetLinearVelocity(velocity);
-
-	b2Transform pbodyPos = pbody->body->GetTransform();
-	position.setX(METERS_TO_PIXELS(pbodyPos.p.x) - texH / 2);
-	position.setY(METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2);
+	if (pbody != nullptr && pbody->body != nullptr) {
+		pbody->body->SetLinearVelocity(velocity);
+		b2Transform pbodyPos = pbody->body->GetTransform();
+		position.setX(METERS_TO_PIXELS(pbodyPos.p.x) - texH / 2);
+		position.setY(METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2);
+	}
+	
 
 	if (velocity.x >= 0)
 	{
@@ -329,7 +332,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		LOG("Collision ENEMY");
 		if (normal.y >= 0.8 || (currentAnimation == &shoot && (normal.x <= -0.8 || normal.x >= 0.8))) {  // Adjust this threshold if needed
 			
-			Engine::GetInstance().physics.get()->DeletePhysBody(physB); // Deletes the body of the enemy from the physics world
+			//Engine::GetInstance().physics.get()->DeletePhysBody(physB); // Deletes the body of the enemy from the physics world
 			pugi::xml_document doc;
 			pugi::xml_parse_result result = doc.load_file("saveload.xml");
 			pugi::xml_node enemyNode = doc.child("config").child("scene").child("entities").child("enemies").child("enemy");
@@ -353,7 +356,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		LOG("Collision FLYINGENEMY");
 		if (normal.y >= 0.8 || (currentAnimation == &shoot && (normal.x <= -0.8 || normal.x >= 0.8))) {  // Adjust this threshold if needed
 
-			Engine::GetInstance().physics.get()->DeletePhysBody(physB); // Deletes the body of the enemy from the physics world
+			//Engine::GetInstance().physics.get()->DeletePhysBody(physB); // Deletes the body of the enemy from the physics world
 			pugi::xml_document doc;
 			pugi::xml_parse_result result = doc.load_file("saveload.xml");
 			pugi::xml_node flyingenemyNode = doc.child("config").child("scene").child("entities").child("enemies").child("flyingenem");
@@ -377,7 +380,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		LOG("Collision BOSS");
 		if (normal.y >= 0.8 || (currentAnimation == &shoot && (normal.x <= -0.8 || normal.x >= 0.8))) {  // Adjust this threshold if needed
 
-			Engine::GetInstance().physics.get()->DeletePhysBody(physB); // Deletes the body of the enemy from the physics world
+			//Engine::GetInstance().physics.get()->DeletePhysBody(physB); // Deletes the body of the enemy from the physics world
 			pugi::xml_document doc;
 			pugi::xml_parse_result result = doc.load_file("saveload.xml");
 			pugi::xml_node bossNode = doc.child("config").child("scene").child("entities").child("enemies").child("boss");
@@ -403,7 +406,9 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		break;*/
 	case ColliderType::ITEM:
 		LOG("Collision ITEM");
+		pickCoinFxId = Engine::GetInstance().audio.get()->LoadFx("Assets/Audio/Fx/coin.ogg");
 		Engine::GetInstance().audio.get()->PlayFx(pickCoinFxId);
+        //Engine::GetInstance().textures.get()->UnLoad(itemTexture); // Unload the texture of the item
 		Engine::GetInstance().physics.get()->DeletePhysBody(physB); // Deletes the body of the item from the physics world
 		break;
 	case ColliderType::UNKNOWN:
@@ -426,9 +431,9 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 	/*case ColliderType::SPIKES:
 		LOG("End Collision SPIKES");
 		break;*/
-	/*case ColliderType::ITEM:
+	case ColliderType::ITEM:
 		LOG("End Collision ITEM");
-		break;*/
+		break;
 	case ColliderType::UNKNOWN:
 		LOG("End Collision UNKNOWN");
 		break;
@@ -463,6 +468,9 @@ void Player::SetPosition(Vector2D pos) {
 }
 
 Vector2D Player::GetPosition() {
+	if (pbody == nullptr) {
+		return Vector2D();
+	}
 	b2Vec2 bodyPos = pbody->body->GetTransform().p;
 	Vector2D pos = Vector2D(METERS_TO_PIXELS(bodyPos.x), METERS_TO_PIXELS(bodyPos.y));
 	return pos;

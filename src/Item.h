@@ -20,13 +20,18 @@ public:
 
 	bool CleanUp();
 
+	void OnCollision(PhysBody* physA, PhysBody* physB);
+
+	void OnCollisionEnd(PhysBody* physA, PhysBody* physB);
+
 public:
 
 	bool isPicked = false;
+	SDL_Texture* itemTexture;
 
 private:
 
-	SDL_Texture* texture;
+	
 	const char* texturePath;
 	int texW, texH;
 

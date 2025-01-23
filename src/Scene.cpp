@@ -17,6 +17,7 @@
 #include "Physics.h"
 #include "GuiControl.h"
 #include "GuiManager.h"
+#include "MainMenu.h"
 
 Scene::Scene() : Module()
 {
@@ -31,6 +32,9 @@ Scene::~Scene()
 // Called before render is available
 bool Scene::Awake()
 {
+	/*if (Engine::GetInstance().mainMenu.get()->Update(Engine::GetInstance().GetDt()) == false) {
+		return false;
+	}*/
 	LOG("Loading Scene");
 	bool ret = true;
 
@@ -73,8 +77,8 @@ bool Scene::Awake()
 	boss->SetParameters(configParameters.child("entities").child("enemies").child("boss"));
 
     // L16: TODO 2: Instantiate a new GuiControlButton in the Scene
-    SDL_Rect btPos = { 520, 350, 120,20 };
-    guiBt = (GuiControlButton*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::BUTTON, 1, "MyButton", btPos, this);
+    //SDL_Rect btPos = { 520, 350, 120,20 };
+    //guiBt = (GuiControlButton*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::BUTTON, 1, "MyButton", btPos, this);
 
 	return ret;
 }
@@ -103,11 +107,11 @@ bool Scene::Update(float dt)
     // Get the player's position from the physics body
     Vector2D playerPos = player->position; // Already updated by the Player class
 
-	// Get the enemy's position from the physics body
-	//for (auto enemy : enemyList) {
-	//	enemy->Update(dt);
+    // Get the enemy's position from the physics body
+    //for (auto enemy : enemyList) {
+    //	enemy->Update(dt);
     //    Vector2D enemyPos = enemy->GetPosition(); // Already updated by the Enemy class
-	//}
+    //}
 
     // Get the screen size (width and height)
     int screenWidth, screenHeight;
@@ -124,29 +128,29 @@ bool Scene::Update(float dt)
     {
         targetCameraX = -480 + (screenWidth / 2) + cameraOffsetX;
     }
-	else if (playerPos.getX() >= 480 && playerPos.getX() <= 2407)
+    else if (playerPos.getX() >= 480 && playerPos.getX() <= 2407)
     {
-		targetCameraX = -playerPos.getX() + (screenWidth / 2) + cameraOffsetX;
-    } 
+        targetCameraX = -playerPos.getX() + (screenWidth / 2) + cameraOffsetX;
+    }
     else
     {
-		targetCameraX = -2407 + (screenWidth / 2) + cameraOffsetX;
+        targetCameraX = -2407 + (screenWidth / 2) + cameraOffsetX;
     }
 
     int targetCameraY = 0;
     if (playerPos.getY() <= 543)
     {
-		targetCameraY = -543 + (screenHeight / 2) + cameraOffsetY;
+        targetCameraY = -543 + (screenHeight / 2) + cameraOffsetY;
     }
-	else if (playerPos.getY() >= 543 && playerPos.getY() <= 1302)
-	{
-		targetCameraY = -playerPos.getY() + (screenHeight / 2) + cameraOffsetY;
-	}
-	else
+    else if (playerPos.getY() >= 543 && playerPos.getY() <= 1302)
+    {
+        targetCameraY = -playerPos.getY() + (screenHeight / 2) + cameraOffsetY;
+    }
+    else
     {
         targetCameraY = -1302 + (screenHeight / 2) + cameraOffsetY;
     }
-        
+
 
     // Smooth camera movement
     float lerpFactor = 0.1f; // Adjust this factor for more or less smoothness
@@ -204,18 +208,18 @@ bool Scene::Update(float dt)
     if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F3) == KEY_DOWN) {
         Engine::GetInstance().map->CleanUp();
         Engine::GetInstance().scene->CleanUp();
-		player->position = Vector2D(100, 100);
+        player->position = Vector2D(100, 100);
         Engine::GetInstance().map->Load("Assets/Maps/", "Level1.tmx");
         LOG("Loaded map1");
     }
 
-	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F5) == KEY_DOWN) {
-		SaveState();
-	}
+    if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F5) == KEY_DOWN) {
+        SaveState();
+    }
 
-	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F6) == KEY_DOWN) {
-		LoadState();
-	}
+    if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F6) == KEY_DOWN) {
+        LoadState();
+    }
 
     return true;
 }
